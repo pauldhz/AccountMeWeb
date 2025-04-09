@@ -3,11 +3,12 @@ export enum TransactionType {
 }
 
 export interface Transaction {
+  uuid: string;
   date: Date;
   amount: number;
   type: TransactionType;
   comment: string;
-  additionalInformation: AdditionalInformation;
+  additionalInformation?: AdditionalInformation;
 }
 
 export interface AdditionalInformation {
