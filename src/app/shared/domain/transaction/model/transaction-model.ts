@@ -1,3 +1,6 @@
+export class TransactionsResult {
+  transactions: Transaction[] | undefined;
+}
 export enum TransactionType {
   CREDIT, DEBIT
 }
