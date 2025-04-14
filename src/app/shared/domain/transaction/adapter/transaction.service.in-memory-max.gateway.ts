@@ -1,15 +1,16 @@
 import {Injectable} from '@angular/core';
 import {Observable, of} from 'rxjs';
-import {TransactionServiceGateway} from './transaction.service.gateway';
+import {TransactionServiceGateway} from '../port/transaction.service.gateway';
 import {Transaction, TransactionType} from '../model/transaction-model';
+import {v4 as uuidv4} from 'uuid';
 
 @Injectable({
   providedIn: 'root'
 })
-export class TransactionServiceInMemory extends TransactionServiceGateway {
+export class TransactionServiceInMemoryMax extends TransactionServiceGateway {
 
 
-  listAll$(): Observable<any> {
+  getTransactions$(): Observable<any> {
     return of(this.listOfTransactions());
   }
 
@@ -29,6 +30,7 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
       type = TransactionType.DEBIT;
     }
     return {
+      uuid: uuidv4(),
       date: new Date(),
       amount: 10 + (i * randomInt),
       type: type,

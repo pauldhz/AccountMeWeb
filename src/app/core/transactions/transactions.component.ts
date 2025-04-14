@@ -1,30 +1,23 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {Transaction} from '../../shared/domain/transaction/model/transaction-model';
-import {
-  TransactionServiceInMemory
-} from '../../shared/domain/transaction/services/transaction.service.in-memory.gateway';
+import {TransactionType} from '../../shared/domain/transaction/model/transaction-model';
+import {toSignal} from "@angular/core/rxjs-interop";
+import {TransactionServiceGateway} from "../../shared/domain/transaction/port/transaction.service.gateway";
+import {DatePipe} from "@angular/common";
 
 @Component({
   selector: 'app-transactions',
   imports: [
-    RouterLink
+    RouterLink,
+    DatePipe,
   ],
   templateUrl: './transactions.component.html',
   styleUrl: './transactions.component.scss'
 })
-export class TransactionsComponent implements OnInit {
+export class TransactionsComponent {
 
-  public transactions: Transaction[] | undefined;
+  private transactionService = inject(TransactionServiceGateway);
+  public transactions = toSignal(this.transactionService.getTransactions$());
 
-  constructor(private transactionService: TransactionServiceInMemory) {
-  }
-
-  ngOnInit() {
-    this.transactionService.listAll$().subscribe(transactions => {
-      console.log("All transactions:", transactions);
-      this.transactions = transactions;
-    });
-  }
-
+  protected readonly TransactionType = TransactionType;
 }

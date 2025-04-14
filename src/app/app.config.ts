@@ -4,11 +4,13 @@ import {provideRouter} from '@angular/router';
 import {routes} from './app.routes';
 import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
 import {TransactionServiceGateway} from './shared/domain/transaction/port/transaction.service.gateway';
-import {TransactionServiceInMemory} from './shared/domain/transaction/adapter/transaction.service.in-memory.gateway';
+import {
+  TransactionServiceInMemoryMax
+} from './shared/domain/transaction/adapter/transaction.service.in-memory-max.gateway';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes), provideClientHydration(withEventReplay()),
-    { provide: TransactionServiceGateway, useFactory: () => new TransactionServiceInMemory()}]
+    { provide: TransactionServiceGateway, useFactory: () => new TransactionServiceInMemoryMax()}]
 };

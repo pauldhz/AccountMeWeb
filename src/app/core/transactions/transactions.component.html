@@ -1,4 +1,22 @@
 <h2>Liste des transactions</h2>
 
-<button routerLink="transactions/add">Ajouter une transaction</button>
+<button routerLink="add">Ajouter une transaction</button>
 
+<table>
+    <tr>
+        <th>id</th>
+        <th>date</th>
+        <th>comment</th>
+        <th>amount</th>
+        <th>type</th>
+    </tr>
+    @for (transaction of transactions(); track transaction.uuid) {
+        <tr>
+            <td>{{transaction.uuid}}</td>
+            <td>{{transaction.date | date: 'YYYY-MM-dd'}}</td>
+            <td>{{transaction.comment}}</td>
+            <td>{{transaction.amount}}</td>
+            <td>{{TransactionType[transaction.type]}}</td>
+        </tr>
+    }
+</table>
