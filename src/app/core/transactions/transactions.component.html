@@ -10,9 +10,9 @@
         <th>amount</th>
         <th>type</th>
     </tr>
-    @for (transaction of transactions(); track transaction.uuid) {
+    @for (transaction of transactions(); track transaction.id) {
         <tr>
-            <td>{{transaction.uuid}}</td>
+            <td>{{transaction.id}}</td>
             <td>{{transaction.date | date: 'YYYY-MM-dd'}}</td>
             <td>{{transaction.comment}}</td>
             <td>{{transaction.amount}}</td>
