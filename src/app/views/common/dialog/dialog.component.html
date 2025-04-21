@@ -1,5 +1,8 @@
-<dialog [open]="open">
-  <div class="dialog-content">
-    <ng-content></ng-content>
+@if (open) {
+  <div class="dialog-backdrop" (click)="onBackdropClick($event)">
+    <div class="dialog-content" role="dialog" aria-modal="true">
+      <button class="close-btn" (click)="onCloseButtonClick()">✕</button>
+      <ng-content></ng-content>
+    </div>
   </div>
-</dialog>
+}
