@@ -1,4 +1,4 @@
-import {Component, inject} from '@angular/core';
+import {Component, inject, signal, WritableSignal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Transaction, TransactionType} from '../../core/transaction/model/transaction-model';
 import {toSignal} from "@angular/core/rxjs-interop";
@@ -25,17 +25,17 @@ export class TransactionComponent {
   private transactionService = inject(TransactionServiceGateway);
 
   transactions = toSignal(this.transactionService.getTransactions$());
-  transactionSelectedForEdition: Transaction | null = null;
+  transactionSelectedForEdition: WritableSignal<Transaction|undefined> = signal(undefined);
 
   affectTransactionForEdition(transaction: Transaction): void {
-    this.transactionSelectedForEdition = transaction;
+    this.transactionSelectedForEdition.set(transaction)
   }
 
-  editTransaction(transaction: Transaction|null) {
-    if(transaction !== null) {
+  editTransaction(transaction: WritableSignal<Transaction|undefined>) {
+    if(transaction() !== undefined) {
       // Edit transaction ...
     }
-    this.transactionSelectedForEdition = null;
+    this.transactionSelectedForEdition = transaction;
   }
 
   protected readonly TransactionType = TransactionType;

@@ -2,8 +2,8 @@
 
 <button routerLink="add">Ajouter une transaction</button>
 
-<app-dialog [open]="transactionSelectedForEdition !== null" (closed)="editTransaction(transactionSelectedForEdition)">
-  <app-edit-transaction [transaction]="transactionSelectedForEdition"></app-edit-transaction>
+<app-dialog [open]="transactionSelectedForEdition() !== undefined" (closed)="editTransaction(transactionSelectedForEdition)">
+  <app-edit-transaction [transaction]="transactionSelectedForEdition()"></app-edit-transaction>
 </app-dialog>
 
 <table>

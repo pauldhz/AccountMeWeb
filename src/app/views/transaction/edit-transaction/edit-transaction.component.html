@@ -1,4 +1,5 @@
-<input type="text" name="date" [value]="transaction?.date">
-<input type="text" name="amount" [value]="transaction?.amount">
-<input type="text" name="comment" [value]="transaction?.comment">
-
+<form [formGroup]="formGroup">
+  <input id="date" type="text" name="date" formControlName="date">
+  <input id="amount" type="text" name="amount" formControlName="amount">
+  <input id="comment" type="text" name="comment" formControlName="comment">
+</form>
