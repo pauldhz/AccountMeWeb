@@ -1,5 +1,7 @@
 <form [formGroup]="formGroup">
-  <input id="date" type="text" name="date" formControlName="date">
-  <input id="amount" type="text" name="amount" formControlName="amount">
-  <input id="comment" type="text" name="comment" formControlName="comment">
+  <div class="flex">
+    <input formControlName="date" id="date" name="date" type="text">
+    <input formControlName="amount" id="amount" name="amount" type="text">
+    <input formControlName="comment" id="comment" name="comment" type="text">
+  </div>
 </form>
