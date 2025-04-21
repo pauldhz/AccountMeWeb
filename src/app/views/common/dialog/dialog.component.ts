@@ -10,7 +10,9 @@ import {Component, ElementRef, EventEmitter, HostListener, Input, Output} from '
 export class DialogComponent {
 
   @Input()
-  public open: boolean = false;
+  open: boolean = false;
+  @Input()
+  title!: string;
 
   @Output()
   closed = new EventEmitter<boolean>();

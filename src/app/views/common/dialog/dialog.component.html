@@ -1,9 +1,12 @@
 @if (open) {
   <div class="dialog-backdrop" (click)="onBackdropClick($event)">
-    <div class="dialog-content" role="dialog" aria-modal="true">
-      <button class="close-btn" (click)="onCloseButtonClick()">✕</button>
+    <div class="dialog-content flex flex-col" role="dialog" aria-modal="true">
+      <div class="flex justify-between gap">
+        <h2>{{title}}</h2>
+        <button class="close-btn self-end" (click)="onCloseButtonClick()">✕</button>
+      </div>
       <ng-content></ng-content>
-      <button class="confirm-btn" (click)="onCloseButtonClick()">Confirmer</button>
+      <button class="confirm-btn self-end" (click)="onConfirm()">Confirmer</button>
     </div>
   </div>
 }
