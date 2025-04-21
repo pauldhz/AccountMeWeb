@@ -35,7 +35,7 @@ export class TransactionComponent {
     if(transaction() !== undefined) {
       // Edit transaction ...
     }
-    this.transactionSelectedForEdition = transaction;
+    this.transactionSelectedForEdition.set(undefined);
   }
 
   protected readonly TransactionType = TransactionType;

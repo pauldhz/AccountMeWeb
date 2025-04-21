@@ -13,34 +13,34 @@ export class DialogComponent {
   public open: boolean = false;
 
   @Output()
-  closed = new EventEmitter<void>();
+  closed = new EventEmitter<boolean>();
 
   constructor(private el: ElementRef) {}
 
   @HostListener('document:keydown.escape', ['$event'])
   onEscape(event: KeyboardEvent) {
     if (this.open) {
-      this.handleClose('escape');
+      this.handleCancel();
     }
   }
 
   onBackdropClick(event: MouseEvent) {
     if (event.target === this.el.nativeElement.querySelector('.dialog-backdrop')) {
-      this.handleClose('backdrop');
+      this.handleCancel();
     }
   }
 
   onCloseButtonClick() {
-    this.handleClose('button');
+    this.handleCancel();
   }
 
-  close() {
-    this.handleClose('programmatic');
+  onConfirm() {
+    this.closed.emit(true);
   }
 
-  private handleClose(reason: 'backdrop' | 'escape' | 'button' | 'programmatic') {
+  private handleCancel() {
     this.open = false;
-    this.closed.emit();
+    this.closed.emit(false);
   }
 
 }
