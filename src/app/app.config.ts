@@ -3,9 +3,9 @@ import {provideRouter} from '@angular/router';
 
 import {routes} from './app.routes';
 import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
-import {TransactionServiceGateway} from './shared/domain/transaction/port/transaction.service.gateway';
-import {TransactionService} from './shared/domain/transaction/services/transaction.service';
+import {TransactionServiceGateway} from './core/transaction/port/transaction.service.gateway';
 import {provideHttpClient} from '@angular/common/http';
+import {TransactionService} from './core/transaction/adapter/transaction.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [

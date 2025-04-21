@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import {AddTransactionComponent} from './core/transactions/add-transaction/add-transaction.component';
-import {TransactionsComponent} from './core/transactions/transactions.component';
+import {AddTransactionComponent} from './views/transaction/add-transaction/add-transaction.component';
+import {TransactionComponent} from './views/transaction/transaction.component';
 
 export const routes: Routes = [
   {
     path: 'transactions',
-    component: TransactionsComponent,
+    component: TransactionComponent,
     children: [
       {
         path: 'add',
