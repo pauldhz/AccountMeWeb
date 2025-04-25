@@ -32,4 +32,11 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
     return of(this.transactions);
   }
 
+  override updateTransaction$(transaction: Transaction): Observable<boolean> {
+    const arrayCopy = [... this.transactions];
+    const index = arrayCopy.findIndex(tmpTransaction => transaction.uuid == tmpTransaction.uuid);
+    arrayCopy[index] = transaction;
+    this.transactions = JSON.parse(JSON.stringify(arrayCopy));
+    return of(true);
+  }
 }

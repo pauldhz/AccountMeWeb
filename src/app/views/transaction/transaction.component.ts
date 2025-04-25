@@ -6,7 +6,7 @@ import {TransactionServiceGateway} from "../../core/transaction/port/transaction
 import {CommonModule, DatePipe} from "@angular/common";
 import {DialogComponent} from '../common/dialog/dialog.component';
 import {EditTransactionComponent} from './edit-transaction/edit-transaction.component';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, switchMap} from 'rxjs';
 
 @Component({
   selector: 'app-transaction',
@@ -24,17 +24,21 @@ import {Subject} from 'rxjs';
 export class TransactionComponent {
 
   private transactionService = inject(TransactionServiceGateway);
-  transactionNotifier$$ = new Subject<void>();
+  private reload$$ = this.transactionService.reload$$();
+  transactionNotifier$$ = new BehaviorSubject<void>(undefined);
 
-  transactions = toSignal(this.transactionService.getTransactions$());
-  transactionSelectedForEdition: WritableSignal<Transaction|undefined> = signal(undefined);
+
+  constructor() {}
+
+  transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionService.getTransactions$())));
+  transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
 
   affectTransactionForEdition(transaction: Transaction): void {
     this.transactionSelectedForEdition.set(transaction)
   }
 
   editTransaction(editionConfirmed: boolean) {
-    if(editionConfirmed) {
+    if (editionConfirmed) {
       this.transactionNotifier$$.next();
     }
     this.transactionSelectedForEdition.set(undefined);

@@ -1,7 +1,8 @@
-import {Component, Input, input, OnChanges, OnInit} from '@angular/core';
+import {Component, effect, inject, Input, input, OnInit} from '@angular/core';
 import {Transaction} from '../../../core/transaction/model/transaction-model';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
-import {Observable, of} from 'rxjs';
+import {Observable, tap} from 'rxjs';
+import {TransactionServiceGateway} from '../../../core/transaction/port/transaction.service.gateway';
 
 @Component({
   selector: 'app-edit-transaction',
@@ -12,32 +13,41 @@ import {Observable, of} from 'rxjs';
   ],
   styleUrl: './edit-transaction.component.scss'
 })
-export class EditTransactionComponent implements OnChanges, OnInit {
+export class EditTransactionComponent implements OnInit {
 
   transaction = input.required<Transaction|undefined>();
+
+  private transactionService = inject(TransactionServiceGateway);
 
   @Input()
   editConfirmation$!: Observable<void>;
 
-  constructor(private formBuilder: FormBuilder) {}
+  constructor(private formBuilder: FormBuilder) {
+    effect(() => {
+      this.formGroup.patchValue({
+        comment: this.transaction()?.comment,
+        amount: this.transaction()?.amount,
+        date: this.transaction()?.date
+      })
+    });
+  }
 
   formGroup!: FormGroup;
 
   ngOnInit(): void {
     this.initEditConfirmationObservation();
-  }
-
-  ngOnChanges(): void {
     this.formGroup = this.formBuilder.group({
-      date: [this.transaction()?.date],
-      amount: [this.transaction()?.amount],
-      comment: [this.transaction()?.comment],
-    })
+      date: '',
+      amount: 0,
+      comment: ''
+    });
   }
 
   initEditConfirmationObservation() {
     this.editConfirmation$.subscribe(
-    () => console.log(`Transaction ${this.transaction()?.uuid} edited`))
+    () => {
+      this.transactionService.updateTransaction$({... this.formGroup.value, uuid: this.transaction()?.uuid})
+        .pipe(tap(() => this.transactionService.reload$$().next())).subscribe();
+    });
   }
-
 }
