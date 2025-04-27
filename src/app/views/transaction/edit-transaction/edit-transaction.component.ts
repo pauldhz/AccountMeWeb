@@ -46,6 +46,9 @@ export class EditTransactionComponent implements OnInit {
   initEditConfirmationObservation() {
     this.editConfirmation$.subscribe(
     () => {
+      if(!this.formGroup) {
+        return;
+      }
       this.transactionService.updateTransaction$({... this.formGroup.value, uuid: this.transaction()?.uuid, type: this.transaction()?.type})
         .pipe(tap(() => this.transactionService.reload$$().next())).subscribe();
     });
