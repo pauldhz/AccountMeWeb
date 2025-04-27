@@ -26,6 +26,13 @@ export class DialogComponent {
     }
   }
 
+  @HostListener('document:keydown.enter', ['$event'])
+  onEnter(event: KeyboardEvent) {
+    if (this.open) {
+      this.confirm();
+    }
+  }
+
   onBackdropClick(event: MouseEvent) {
     if (event.target === this.el.nativeElement.querySelector('.dialog-backdrop')) {
       this.handleCancel();
@@ -37,6 +44,10 @@ export class DialogComponent {
   }
 
   onConfirm() {
+    this.confirm();
+  }
+
+  private confirm() {
     this.closed.emit(true);
   }
 
