@@ -1,5 +1,12 @@
 @import "../../../node_modules/tailwindcss";
 
+@font-face {
+  font-family: 'AmiriQuran';
+  src: url('/assets/fonts/AmiriQuran-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
   font-size: 12px;
 }
