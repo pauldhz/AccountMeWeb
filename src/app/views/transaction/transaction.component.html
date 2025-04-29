@@ -2,6 +2,10 @@
 
 <button routerLink="add">Ajouter une transaction</button>
 
+<app-dialog [open]="transactionSelectedForEdition() !== undefined" (closed)="editTransaction($event)" title="Editer une transaction">
+  <app-edit-transaction [transaction]="transactionSelectedForEdition()" [editConfirmation$]="transactionNotifier$$.asObservable()"></app-edit-transaction>
+</app-dialog>
+
 <table>
     <tr>
         <th>id</th>
@@ -17,6 +21,7 @@
             <td>{{transaction.comment}}</td>
             <td>{{transaction.amount}}</td>
             <td>{{TransactionType[transaction.type]}}</td>
+            <td><button (click)="affectTransactionForEdition(transaction)">editer</button></td>
         </tr>
     }
 </table>
