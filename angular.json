@@ -32,7 +32,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss", "src/style-customized.css"
+              "src/assets/styles/styles.scss", "src/assets/styles/style-customized.css"
             ],
             "scripts": [],
             "server": "src/main.server.ts",
@@ -99,7 +99,7 @@
               }
             ],
             "styles": [
-              "src/styles.scss"
+              "src/assets/styles/styles.scss"
             ],
             "scripts": []
           }

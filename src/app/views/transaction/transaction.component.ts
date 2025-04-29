@@ -4,7 +4,7 @@ import {Transaction, TransactionType} from '../../core/transaction/model/transac
 import {toSignal} from "@angular/core/rxjs-interop";
 import {TransactionServiceGateway} from "../../core/transaction/port/transaction.service.gateway";
 import {CommonModule, DatePipe} from "@angular/common";
-import {DialogComponent} from '../common/dialog/dialog.component';
+import {DialogComponent} from '../../shared/component/dialog/dialog.component';
 import {EditTransactionComponent} from './edit-transaction/edit-transaction.component';
 import {BehaviorSubject, switchMap} from 'rxjs';
 

@@ -7,6 +7,7 @@ import {TransactionServiceGateway} from './core/transaction/port/transaction.ser
 import {provideHttpClient} from '@angular/common/http';
 import {TransactionServiceInMemory} from './core/transaction/adapter/transaction.service.in-memory.gateway';
 
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
