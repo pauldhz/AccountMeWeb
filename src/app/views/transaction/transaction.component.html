@@ -1,7 +1,5 @@
 <div class="container">
-  <h1>Liste des transactions</h1>
-
-  <button routerLink="add">Ajouter une transaction</button>
+  <h1 class="title is-4">Mes transactions</h1>
 
   <app-dialog (closed)="editTransaction($event)" [open]="transactionSelectedForEdition() !== undefined"
               title="Editer une transaction">
@@ -9,25 +7,28 @@
                           [transaction]="transactionSelectedForEdition()"></app-edit-transaction>
   </app-dialog>
 
-  <table>
+  <table class="table">
+    <thead>
     <tr>
-      <th>id</th>
       <th>date</th>
       <th>comment</th>
       <th>amount</th>
       <th>type</th>
     </tr>
-    @for (transaction of transactions();track transaction.uuid) {
-      <tr>
-        <td>{{ transaction.uuid }}</td>
-        <td>{{ transaction.date | date: 'YYYY-MM-dd' }}</td>
-        <td>{{ transaction.comment }}</td>
-        <td>{{ transaction.amount }}</td>
-        <td>{{ TransactionType[transaction.type] }}</td>
-        <td>
-          <button (click)="affectTransactionForEdition(transaction)">editer</button>
-        </td>
-      </tr>
-    }
+    </thead>
+    <tbody>
+      @for (transaction of transactions();track transaction.uuid) {
+        <tr>
+          <td>{{ transaction.date | date: 'YYYY-MM-dd' }}</td>
+          <td>{{ transaction.comment }}</td>
+          <td>{{ transaction.amount }}</td>
+          <td>{{ TransactionType[transaction.type] }}</td>
+          <td>
+            <a class="has-text-primary" (click)="affectTransactionForEdition(transaction)">editer</a>
+          </td>
+        </tr>
+      }
+    </tbody>
   </table>
+  <a class="has-text-primary" role="button" routerLink="add">Ajouter une transaction</a>
 </div>
