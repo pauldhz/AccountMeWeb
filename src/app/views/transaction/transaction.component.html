@@ -1,27 +1,33 @@
-<h2>Liste des transactions</h2>
+<div class="container">
+  <h1>Liste des transactions</h1>
 
-<button routerLink="add">Ajouter une transaction</button>
+  <button routerLink="add">Ajouter une transaction</button>
 
-<app-dialog [open]="transactionSelectedForEdition() !== undefined" (closed)="editTransaction($event)" title="Editer une transaction">
-  <app-edit-transaction [transaction]="transactionSelectedForEdition()" [editConfirmation$]="transactionNotifier$$.asObservable()"></app-edit-transaction>
-</app-dialog>
+  <app-dialog (closed)="editTransaction($event)" [open]="transactionSelectedForEdition() !== undefined"
+              title="Editer une transaction">
+    <app-edit-transaction [editConfirmation$]="transactionNotifier$$.asObservable()"
+                          [transaction]="transactionSelectedForEdition()"></app-edit-transaction>
+  </app-dialog>
 
-<table>
+  <table>
     <tr>
-        <th>id</th>
-        <th>date</th>
-        <th>comment</th>
-        <th>amount</th>
-        <th>type</th>
+      <th>id</th>
+      <th>date</th>
+      <th>comment</th>
+      <th>amount</th>
+      <th>type</th>
     </tr>
-    @for (transaction of transactions(); track transaction.uuid) {
-        <tr>
-            <td>{{transaction.uuid}}</td>
-            <td>{{transaction.date | date: 'YYYY-MM-dd'}}</td>
-            <td>{{transaction.comment}}</td>
-            <td>{{transaction.amount}}</td>
-            <td>{{TransactionType[transaction.type]}}</td>
-            <td><button (click)="affectTransactionForEdition(transaction)">editer</button></td>
-        </tr>
+    @for (transaction of transactions();track transaction.uuid) {
+      <tr>
+        <td>{{ transaction.uuid }}</td>
+        <td>{{ transaction.date | date: 'YYYY-MM-dd' }}</td>
+        <td>{{ transaction.comment }}</td>
+        <td>{{ transaction.amount }}</td>
+        <td>{{ TransactionType[transaction.type] }}</td>
+        <td>
+          <button (click)="affectTransactionForEdition(transaction)">editer</button>
+        </td>
+      </tr>
     }
-</table>
+  </table>
+</div>
