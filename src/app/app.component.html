@@ -1,6 +1,26 @@
 <main class="main">
+  <nav class="navbar" role="navigation" aria-label="main navigation">
+    <div class="navbar-brand">
+      <a class="navbar-item has-text-primary" href="/" id="logo">Account Me</a>
+    </div>
+    <div id="navbarBasicExample" class="navbar-menu">
+      <div class="navbar-start">
+        <a class="navbar-item" href="/">
+          Home
+        </a>
 
-  <button class="button is-primary">Transactions</button>
+        <a class="navbar-item" href="/transactions">
+          Transactions
+        </a>
+
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">
+            More
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
 </main>
 
 <router-outlet />
