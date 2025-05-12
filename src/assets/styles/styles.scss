@@ -1,8 +1,15 @@
 @import "../../../node_modules/tailwindcss";
 
 @font-face {
-  font-family: 'AmiriQuran';
-  src: url('/assets/fonts/AmiriQuran-Regular.ttf') format('truetype');
+  font-family: 'Overlock';
+  src: url('/assets/fonts/overclock/Overlock-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/assets/fonts/roboto/Roboto-VariableFont_wdth,wght.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
