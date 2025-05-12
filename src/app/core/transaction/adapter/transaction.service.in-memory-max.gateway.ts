@@ -32,7 +32,7 @@ export class TransactionServiceInMemoryMax extends TransactionServiceGateway {
       type = TransactionType.DEBIT;
     }
     return {
-      uuid: uuidv4(),
+      id: uuidv4(),
       date: new Date(),
       amount: 10 + (i * randomInt),
       type: type,
