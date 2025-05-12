@@ -49,7 +49,7 @@ export class EditTransactionComponent implements OnInit {
       if(!this.formGroup) {
         return;
       }
-      this.transactionService.updateTransaction$({... this.formGroup.value, uuid: this.transaction()?.uuid, type: this.transaction()?.type})
+      this.transactionService.updateTransaction$({... this.formGroup.value, id: this.transaction()?.id, type: this.transaction()?.type})
         .pipe(tap(() => this.transactionService.reload$$().next())).subscribe();
     });
   }

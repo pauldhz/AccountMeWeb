@@ -16,8 +16,7 @@ export class TransactionService extends TransactionServiceGateway {
   }
 
   updateTransaction$(transaction: Transaction): Observable<boolean> {
-    console.warn("Update Transaction is not working fine...");
-    return this.http.put<boolean>('/account-me/transactions', {transaction});
+    return this.http.put<boolean>('/account-me/transactions', transaction);
   }
 
 

@@ -6,21 +6,21 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
 
   private transactions: Transaction[] = [
     {
-      uuid: '4516de03-3241-45b0-a3ad-bfe598259b0b',
+      id: '4516de03-3241-45b0-a3ad-bfe598259b0b',
       date: new Date(),
       amount: 20.00,
       type: TransactionType.DEBIT,
       comment: 'no comment for this debit'
     },
     {
-      uuid: '02e07ddc-e9c7-4283-9343-a9bd3f2a0301',
+      id: '02e07ddc-e9c7-4283-9343-a9bd3f2a0301',
       date: new Date(),
       amount: 30.00,
       type: TransactionType.DEBIT,
       comment: 'it is too much'
     },
     {
-      uuid: '8cdfb38a-0dc7-4100-8de1-f9a9628eb086',
+      id: '8cdfb38a-0dc7-4100-8de1-f9a9628eb086',
       date: new Date(),
       amount: 15.45,
       type: TransactionType.CREDIT,
@@ -34,7 +34,7 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
 
   override updateTransaction$(transaction: Transaction): Observable<boolean> {
     const arrayCopy = [... this.transactions];
-    const index = arrayCopy.findIndex(tmpTransaction => transaction.uuid == tmpTransaction.uuid);
+    const index = arrayCopy.findIndex(tmpTransaction => transaction.id == tmpTransaction.id);
     arrayCopy[index] = transaction;
     this.transactions = JSON.parse(JSON.stringify(arrayCopy));
     return of(true);

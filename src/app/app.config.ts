@@ -6,11 +6,12 @@ import {provideClientHydration, withEventReplay} from '@angular/platform-browser
 import {TransactionServiceGateway} from './core/transaction/port/transaction.service.gateway';
 import {provideHttpClient, withFetch} from '@angular/common/http';
 import {TransactionServiceInMemory} from './core/transaction/adapter/transaction.service.in-memory.gateway';
+import {TransactionService} from './core/transaction/adapter/transaction.service';
 
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes), provideClientHydration(withEventReplay()), provideHttpClient(withFetch()),
-    { provide: TransactionServiceGateway, useFactory: () => new TransactionServiceInMemory()}]
+    { provide: TransactionServiceGateway, useFactory: () => new TransactionService()}]
 };
