@@ -1,9 +1,6 @@
 name: Generate PlantUML diagram
 
-on:
-  push:
-    branches:
-      - develop
+on: [push]
 
 jobs:
   generate-diagram:
