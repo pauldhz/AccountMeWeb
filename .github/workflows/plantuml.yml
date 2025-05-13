@@ -1,0 +1,12 @@
+name: Generate PlantUML diagram
+
+on:
+  push:
+    branches:
+    - develop
+jobs:
+  generate-diagram:
+    runs-on: ubuntu-latest
+    steps: 
+     - name: First echo
+       run: echo 'First echo !'
