@@ -11,5 +11,8 @@ jobs:
        run: echo 'First echo !'
      
      - uses: actions/setup-java@v4
+       with:
+          distribution: 'temurin'
+          java-version: '17'
      - name: Use java
        run: java -version
