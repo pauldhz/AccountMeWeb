@@ -9,3 +9,7 @@ jobs:
     steps: 
      - name: First echo
        run: echo 'First echo !'
+     
+     - uses: actions/setup-java@v4
+     - name: Use java
+       run: java -version
