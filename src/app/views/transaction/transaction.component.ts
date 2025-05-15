@@ -7,6 +7,7 @@ import {CommonModule, DatePipe} from "@angular/common";
 import {DialogComponent} from '../../shared/component/dialog/dialog.component';
 import {EditTransactionComponent} from './edit-transaction/edit-transaction.component';
 import {BehaviorSubject, switchMap} from 'rxjs';
+import {ImportTransactionComponent} from './import-transaction/import-transaction.component';
 
 @Component({
   selector: 'app-transaction',
@@ -15,7 +16,8 @@ import {BehaviorSubject, switchMap} from 'rxjs';
     DatePipe,
     CommonModule,
     DialogComponent,
-    EditTransactionComponent
+    EditTransactionComponent,
+    ImportTransactionComponent
   ],
   templateUrl: './transaction.component.html',
   standalone: true,
@@ -32,6 +34,7 @@ export class TransactionComponent {
 
   transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionService.getTransactions$())));
   transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
+  importAsCSVOpened = signal(false);
 
   affectTransactionForEdition(transaction: Transaction): void {
     this.transactionSelectedForEdition.set(transaction)

@@ -7,6 +7,11 @@
                           [transaction]="transactionSelectedForEdition()"></app-edit-transaction>
   </app-dialog>
 
+  <app-dialog [open]="importAsCSVOpened()" (closed)="importAsCSVOpened.set(false)"
+              title="Importer des transactions (CSV)">
+    <app-import-transaction></app-import-transaction>
+  </app-dialog>
+
   <table class="table">
     <thead>
     <tr>
@@ -30,5 +35,8 @@
       }
     </tbody>
   </table>
-  <a class="has-text-primary" role="button" routerLink="add">Ajouter une transaction</a>
+  <div class="is-flex is-flex-direction-column">
+    <a class="has-text-primary" role="button" routerLink="add">Ajouter une transaction</a>
+    <a class="has-text-primary" role="button" (click)="importAsCSVOpened.set(true)">Importer des transactions (CSV)</a>
+  </div>
 </div>
