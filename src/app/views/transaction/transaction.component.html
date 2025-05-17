@@ -9,7 +9,7 @@
 
   <app-dialog [open]="importAsCSVOpened()" (closed)="importAsCSVOpened.set(false)"
               title="Importer des transactions (CSV)">
-    <app-import-transaction></app-import-transaction>
+    <app-import-transaction [header]="signal([])()"></app-import-transaction>
   </app-dialog>
 
   <table class="table">

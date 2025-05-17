@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component, input} from '@angular/core';
 
 @Component({
   selector: 'app-import-transaction',
@@ -7,5 +7,5 @@ import { Component } from '@angular/core';
   styleUrl: './import-transaction.component.scss'
 })
 export class ImportTransactionComponent {
-
+  header = input.required<string[]>();
 }

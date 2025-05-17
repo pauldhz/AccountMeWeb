@@ -1,1 +1,22 @@
-<p>import-transaction works!</p>
+<div class="is-flex is-justify-content-space-between">
+  <div class="is-flex is-flex-direction-column">
+    <label class="target-title">Date</label>
+    <select class="csv-header">
+      @for (option of header(); track option){
+        <option>{{option}}</option>
+      }
+    </select>
+  </div>
+  <div class="is-flex is-flex-direction-column">
+    <label class="target-title">Montant</label>
+  </div>
+  <div class="is-flex is-flex-direction-column">
+    <label class="target-title">Type</label>
+  </div>
+  <div class="is-flex is-flex-direction-column">
+    <label class="target-title">Commentaire</label>
+  </div>
+  <div class="is-flex is-flex-direction-column">
+    <label class="target-title">Informations additionnelles</label>
+  </div>
+</div>

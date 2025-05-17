@@ -1,4 +1,4 @@
-import {Component, inject, signal, WritableSignal} from '@angular/core';
+import {Component, inject, input, signal, WritableSignal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Transaction, TransactionType} from '../../core/transaction/model/transaction-model';
 import {toSignal} from "@angular/core/rxjs-interop";
@@ -48,4 +48,5 @@ export class TransactionComponent {
   }
 
   protected readonly TransactionType = TransactionType;
+  protected readonly signal = signal;
 }
