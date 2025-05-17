@@ -6,6 +6,7 @@ describe('ImportTransactionComponent', () => {
   let component: ImportTransactionComponent;
   let fixture: ComponentFixture<ImportTransactionComponent>;
 
+  const TARGETED_TITLES = ['Date', 'Montant', 'Type', 'Commentaire', 'Informations additionnelles'];
   const HEADER = ['Date', 'Amount', 'Comment'];
 
   beforeEach(async () => {
@@ -17,6 +18,7 @@ describe('ImportTransactionComponent', () => {
     fixture = TestBed.createComponent(ImportTransactionComponent);
     component = fixture.componentInstance;
     fixture.componentRef.setInput('header', HEADER);
+    fixture.componentRef.setInput('targets', TARGETED_TITLES);
     fixture.detectChanges();
   });
 
@@ -33,11 +35,12 @@ describe('ImportTransactionComponent', () => {
     expect(targetTitles[4].innerText).toEqual('Informations additionnelles');
   });
 
-  it('should display select input with csv headers', () => {
-    const selects = fixture.nativeElement.querySelectorAll('select.csv-header');
-    const options = [...selects[0].querySelectorAll('option')].map((option: HTMLElement) => option.innerText);
-    console.log(options);
-    expect(TestUtils.containsAll(options, HEADER)).toEqual([]);
+  it('should display select input with csv headers for each target', () => {
+    const selects = [...fixture.nativeElement.querySelectorAll('select.csv-header')];
 
+    for(let i=0; i<TARGETED_TITLES.length; i++) {
+      const options = [...selects[i].querySelectorAll('option')].map((option: HTMLElement) => option.innerText);
+      expect(TestUtils.containsAll(options, HEADER)).toEqual([]);
+    }
   })
 });

@@ -7,5 +7,6 @@ import {Component, input} from '@angular/core';
   styleUrl: './import-transaction.component.scss'
 })
 export class ImportTransactionComponent {
+  targets= input.required<string[]>();
   header = input.required<string[]>();
 }

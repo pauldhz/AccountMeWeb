@@ -1,22 +1,14 @@
-<div class="is-flex is-justify-content-space-between">
-  <div class="is-flex is-flex-direction-column">
-    <label class="target-title">Date</label>
-    <select class="csv-header">
-      @for (option of header(); track option){
-        <option>{{option}}</option>
-      }
-    </select>
-  </div>
-  <div class="is-flex is-flex-direction-column">
-    <label class="target-title">Montant</label>
-  </div>
-  <div class="is-flex is-flex-direction-column">
-    <label class="target-title">Type</label>
-  </div>
-  <div class="is-flex is-flex-direction-column">
-    <label class="target-title">Commentaire</label>
-  </div>
-  <div class="is-flex is-flex-direction-column">
-    <label class="target-title">Informations additionnelles</label>
-  </div>
+<div class="is-flex is-justify-content-space-between form-container">
+  @for(target of targets(); track target) {
+    <div class="is-flex is-flex-direction-column is-fullwidth">
+      <label class="target-title">{{target}}</label>
+      <div class="select">
+      <select class="csv-header">
+        @for (option of header(); track option){
+          <option>{{option}}</option>
+        }
+      </select>
+      </div>
+    </div>
+  }
 </div>

@@ -25,6 +25,9 @@ import {ImportTransactionComponent} from './import-transaction/import-transactio
 })
 export class TransactionComponent {
 
+  public targets = ['Date', 'Montant', 'Type', 'Commentaire', 'Informations additionnelles'];
+  public options = ['Test 1', 'Another test'];
+
   private transactionService = inject(TransactionServiceGateway);
   private reload$$ = this.transactionService.reload$$();
   transactionNotifier$$ = new BehaviorSubject<void>(undefined);
