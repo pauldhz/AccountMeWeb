@@ -8,6 +8,7 @@ import {DialogComponent} from '../../shared/component/dialog/dialog.component';
 import {EditTransactionComponent} from './edit-transaction/edit-transaction.component';
 import {BehaviorSubject, switchMap} from 'rxjs';
 import {ImportTransactionComponent} from './import-transaction/import-transaction.component';
+import {CsvUtils} from '../../utils/csv-utils';
 
 @Component({
   selector: 'app-transaction',
@@ -38,6 +39,8 @@ export class TransactionComponent {
   transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionService.getTransactions$())));
   transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
   importAsCSVOpened = signal(false);
+  csvUploadedHeader: WritableSignal<string[]> = signal([]);
+
 
   affectTransactionForEdition(transaction: Transaction): void {
     this.transactionSelectedForEdition.set(transaction)
@@ -48,6 +51,20 @@ export class TransactionComponent {
       this.transactionNotifier$$.next();
     }
     this.transactionSelectedForEdition.set(undefined);
+  }
+
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if(input.files && input.files?.length > 0) {
+      const file: File | null = input.files[0] ?? null;
+      const reader = new FileReader();
+      reader.onload = () => {
+        const fileContent = reader.result as string;
+        this.csvUploadedHeader.set(CsvUtils.getHeader(fileContent, ";"));
+        this.importAsCSVOpened.set(true);
+      }
+      reader.readAsText(file);
+    }
   }
 
   protected readonly TransactionType = TransactionType;
