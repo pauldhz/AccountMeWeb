@@ -1,4 +1,4 @@
-import {Component, inject, input, signal, WritableSignal} from '@angular/core';
+import {Component, ElementRef, inject, input, signal, ViewChild, WritableSignal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Transaction, TransactionType} from '../../core/transaction/model/transaction-model';
 import {toSignal} from "@angular/core/rxjs-interop";
@@ -27,20 +27,20 @@ import {CsvUtils} from '../../utils/csv-utils';
 export class TransactionComponent {
 
   public targets = ['Date', 'Montant', 'Type', 'Commentaire', 'Informations additionnelles'];
-  public options = ['Test 1', 'Another test'];
 
   private transactionService = inject(TransactionServiceGateway);
   private reload$$ = this.transactionService.reload$$();
   transactionNotifier$$ = new BehaviorSubject<void>(undefined);
 
-
-  constructor() {}
+  @ViewChild('inputFile') inputFile! : ElementRef<HTMLInputElement>;
 
   transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionService.getTransactions$())));
   transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
   importAsCSVOpened = signal(false);
+  filename: WritableSignal<string> = signal('');
   csvUploadedHeader: WritableSignal<string[]> = signal([]);
 
+  constructor() {}
 
   affectTransactionForEdition(transaction: Transaction): void {
     this.transactionSelectedForEdition.set(transaction)
@@ -58,13 +58,20 @@ export class TransactionComponent {
     if(input.files && input.files?.length > 0) {
       const file: File | null = input.files[0] ?? null;
       const reader = new FileReader();
+        this.filename.set(file.name);
+        this.importAsCSVOpened.set(true);
       reader.onload = () => {
         const fileContent = reader.result as string;
         this.csvUploadedHeader.set(CsvUtils.getHeader(fileContent, ";"));
-        this.importAsCSVOpened.set(true);
       }
       reader.readAsText(file);
     }
+  }
+
+  onClose() {
+    this.importAsCSVOpened.set(false);
+    this.inputFile.nativeElement.value = '';
+    this.filename.set('');
   }
 
   protected readonly TransactionType = TransactionType;
