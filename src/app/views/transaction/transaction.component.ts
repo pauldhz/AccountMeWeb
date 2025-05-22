@@ -1,4 +1,4 @@
-import {Component, ElementRef, inject, input, signal, ViewChild, WritableSignal} from '@angular/core';
+import {Component, ElementRef, inject, signal, ViewChild, WritableSignal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Transaction, TransactionType} from '../../core/transaction/model/transaction-model';
 import {toSignal} from "@angular/core/rxjs-interop";
@@ -38,7 +38,7 @@ export class TransactionComponent {
   transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
   importAsCSVOpened = signal(false);
   filename: WritableSignal<string> = signal('');
-  csvUploadedHeader: WritableSignal<string[]> = signal([]);
+  csvUploadedContent: WritableSignal<Map<string, string[]>> = signal(new Map());
 
   constructor() {}
 
@@ -62,7 +62,7 @@ export class TransactionComponent {
         this.importAsCSVOpened.set(true);
       reader.onload = () => {
         const fileContent = reader.result as string;
-        this.csvUploadedHeader.set(CsvUtils.getHeader(fileContent, ";"));
+        this.csvUploadedContent.set(CsvUtils.getContent(fileContent, ";"));
       }
       reader.readAsText(file);
     }

@@ -1,13 +1,20 @@
 <div class="is-flex is-justify-content-space-between form-container is-column-gap-1">
-  @for(target of targets(); track target) {
+  @for(target of workingTargets(); track target.targetName) {
     <div class="is-flex is-flex-direction-column is-fullwidth">
-      <label class="target-title">{{target}}</label>
+      <label class="target-title">{{target.targetName}}</label>
       <div class="select">
-      <select class="csv-header">
-        @for (option of header(); track option){
-          <option>{{option}}</option>
+      <select class="csv-header" (change)="changeFromEvent(target.targetName, $event)">
+        <option></option>
+        @for (option of csvContent() | keyvalue; track option){
+          <option>{{option.key}}</option>
         }
       </select>
+        <div class="overview is-flex is-flex-direction-column">
+          @for (value of target.overviews; track $index) {
+            <span>{{value}}</span>
+          }
+          <span>...</span>
+        </div>
       </div>
     </div>
   }

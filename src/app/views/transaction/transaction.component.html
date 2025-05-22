@@ -9,7 +9,7 @@
 
   <app-dialog [open]="importAsCSVOpened()" (closed)="onClose()"
               title="Importer des transactions (CSV)">
-    <app-import-transaction [header]="csvUploadedHeader()" [targets]="signal(targets)()"></app-import-transaction>
+    <app-import-transaction [targets]="signal(targets)()" [csvContent]="csvUploadedContent()"></app-import-transaction>
   </app-dialog>
 
   <table class="table">
