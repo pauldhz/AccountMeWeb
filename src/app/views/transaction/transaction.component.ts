@@ -68,7 +68,8 @@ export class TransactionComponent {
     }
   }
 
-  onClose() {
+  onClose(confirmed: boolean) {
+    console.log(confirmed);
     this.importAsCSVOpened.set(false);
     this.inputFile.nativeElement.value = '';
     this.filename.set('');

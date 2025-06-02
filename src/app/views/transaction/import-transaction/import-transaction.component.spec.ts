@@ -53,7 +53,7 @@ describe('ImportTransactionComponent', () => {
     select.selectedIndex = 1;
     select.dispatchEvent(new Event('change'));
     fixture.detectChanges();
-    const overviewRows = fixture.nativeElement.querySelector('.select div.overview').querySelectorAll('span');
+    const overviewRows = fixture.nativeElement.querySelector('.target-mapping .overview').querySelectorAll('span');
     expect(overviewRows.length).toEqual(4);
     expect(overviewRows[0].innerText).toEqual('20.00');
   })

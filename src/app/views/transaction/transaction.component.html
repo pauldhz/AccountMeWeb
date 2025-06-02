@@ -7,7 +7,7 @@
                           [transaction]="transactionSelectedForEdition()"></app-edit-transaction>
   </app-dialog>
 
-  <app-dialog [closeOnBackdrop]="false" [open]="importAsCSVOpened()" (closed)="onClose()"
+  <app-dialog [closeOnBackdrop]="false" [open]="importAsCSVOpened()" (closed)="onClose($event)"
               title="Importer des transactions (CSV)">
     <app-import-transaction [targets]="signal(targets)()" [csvContent]="csvUploadedContent()"></app-import-transaction>
   </app-dialog>
