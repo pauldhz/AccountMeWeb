@@ -9,12 +9,12 @@
           <option>{{option.key}}</option>
         }
       </select>
-        <div class="overview is-flex is-flex-direction-column">
-          @for (value of target.overviews; track $index) {
-            <span>{{value}}</span>
-          }
-          <span>...</span>
-        </div>
+      </div>
+      <div class="overview is-flex is-flex-direction-column">
+        @for (value of target.overviews; track $index) {
+          <div>{{value}}</div>
+        }
+        <span>...</span>
       </div>
     </div>
   }
