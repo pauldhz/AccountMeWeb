@@ -1,12 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImportTransactionComponent } from './import-transaction.component';
 import {TestUtils} from '../../../utils/test/test-utils';
+import {GroupBuilder} from '../../../utils/group-builder';
+import {of} from 'rxjs';
 
 describe('ImportTransactionComponent', () => {
   let component: ImportTransactionComponent;
   let fixture: ComponentFixture<ImportTransactionComponent>;
 
-  const TARGETED_TITLES = ['Date', 'Montant', 'Type', 'Commentaire', 'Informations additionnelles'];
+  const groupBuilder = new GroupBuilder();
+
+const TARGETED_TITLES =
+    groupBuilder.addGroup('Date')
+      .addGroup('Montant')
+      .addElement('Type')
+      .addGroup('Commentaire')
+      .addGroup('Informations additionnelles')
+      .build();
 
   const CONTENT: Map<string, string[]> = new Map();
   CONTENT.set('Date', ['2025-01-01','2025-01-02','2025-01-03','2025-01-04','2025-01-05']);
@@ -21,8 +31,9 @@ describe('ImportTransactionComponent', () => {
 
     fixture = TestBed.createComponent(ImportTransactionComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('targets', TARGETED_TITLES);
+    fixture.componentRef.setInput('mappingTargets', TARGETED_TITLES);
     fixture.componentRef.setInput('csvContent', CONTENT);
+    fixture.componentRef.setInput('confirmation$', of('false'))
     fixture.detectChanges();
   });
 

@@ -8,7 +8,8 @@ import {DialogComponent} from '../../shared/component/dialog/dialog.component';
 import {EditTransactionComponent} from './edit-transaction/edit-transaction.component';
 import {BehaviorSubject, switchMap} from 'rxjs';
 import {ImportTransactionComponent} from './import-transaction/import-transaction.component';
-import {CsvUtils} from '../../utils/csv-utils';
+import {CsvUtils} from '../../utils/csv/csv-utils';
+import {GroupBuilder} from '../../utils/group-builder';
 
 @Component({
   selector: 'app-transaction',
@@ -26,10 +27,18 @@ import {CsvUtils} from '../../utils/csv-utils';
 })
 export class TransactionComponent {
 
-  public targets = ['Date', 'Montant', 'Type', 'Commentaire', 'Informations additionnelles'];
-
+  groupBuilder = new GroupBuilder();
+  public targets =
+    this.groupBuilder.addGroup('Date')
+      .addGroup('Montant')
+      .addElement('Type')
+      .addGroup('Commentaire')
+      .addGroup('Informations additionnelles')
+      .build();
   private transactionService = inject(TransactionServiceGateway);
   private reload$$ = this.transactionService.reload$$();
+
+  dialogCloseNotifier$$ = new BehaviorSubject(false);
   transactionNotifier$$ = new BehaviorSubject<void>(undefined);
 
   @ViewChild('inputFile') inputFile! : ElementRef<HTMLInputElement>;
@@ -69,7 +78,9 @@ export class TransactionComponent {
   }
 
   onClose(confirmed: boolean) {
-    console.log(confirmed);
+    if(confirmed) {
+      this.dialogCloseNotifier$$.next(true);
+    }
     this.importAsCSVOpened.set(false);
     this.inputFile.nativeElement.value = '';
     this.filename.set('');

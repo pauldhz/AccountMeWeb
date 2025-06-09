@@ -1,53 +1,81 @@
-import {Component, input, OnChanges, signal, SimpleChanges} from '@angular/core';
+import {Component, Input, input, OnChanges, OnInit, signal, SimpleChanges} from '@angular/core';
 
 import {KeyValuePipe} from '@angular/common';
-
-interface Target {
-  targetName: string;
-  selectedValue: string;
-  overviews: string[];
-}
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {Observable} from 'rxjs';
+import {Group} from '../../../utils/group-builder';
 
 @Component({
   selector: 'app-import-transaction',
   standalone: true,
   templateUrl: './import-transaction.component.html',
   imports: [
-    KeyValuePipe
+    KeyValuePipe,
+    ReactiveFormsModule
   ],
   styleUrl: './import-transaction.component.scss'
 })
-export class ImportTransactionComponent implements OnChanges {
-  targets = input.required<string[]>();
+
+/**
+ * Component responsible of mapping the given CSV to Transaction Database
+ */
+export class ImportTransactionComponent implements OnChanges, OnInit {
+  form!: FormGroup;
+
+  mappingTargets = input.required<Group[]>();
   csvContent = input.required<Map<string, string[]>>();
 
-  workingTargets = signal([] as Target[]);
-  constructor() {
+  rowsOverview = signal(new Map<string, string[]>());
+
+  @Input({required: true})
+  confirmation$!: Observable<boolean>;
+
+  constructor(private fb: FormBuilder) {
+  }
+
+  ngOnInit() {
+    this.confirmation$.subscribe(() => {});
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-      this.workingTargets.set(this.targets().map(target => ({
-          targetName: target,
-          selectedValue: ''
-        }) as Target
-      ));
-  }
 
-  public changeFromEvent(targetField: string, event: Event) {
-    const selectedValue = (event.target as HTMLSelectElement).value;
-    this.change(targetField, selectedValue)
-  }
-
-  public change(targetField: string, newValue: string | undefined) {
-    if(newValue === undefined) {
-      return;
+    if(changes['csvContent']) {
+      this.initForm();
+      this.changeOverviewOnTargetMappingChange();
     }
-    const workingTarget = this.workingTargets();
-    const index = workingTarget.findIndex(target => target.targetName == targetField);
-    const values = this.csvContent().get(newValue) as string[];
-    workingTarget[index].selectedValue = newValue;
-    workingTarget[index].overviews = values.slice(0, 3);
-    this.workingTargets.set(workingTarget);
+  }
+
+  /**
+   * Init form dynamically regarding to the targets required for mapping
+   * @private
+   */
+  private initForm() {
+    this.form = this.fb.group({});
+    this.mappingTargets().forEach((group: Group) => {
+      group.fields.forEach(target => {
+        this.form.addControl(target, this.fb.control(''));
+        // Init overviews
+        this.rowsOverview().set(target, []);
+      })
+    });
+  }
+
+  /**
+   * Update overview map to display rows for selected column
+   * @private
+   */
+  private changeOverviewOnTargetMappingChange() {
+    for (const [name, control] of Object.entries(this.form.controls)) {
+      control.valueChanges.subscribe({
+        next: selectedColumn => {
+          const rows = this.csvContent().get(selectedColumn);
+          if (rows) {
+            this.rowsOverview().set(name, rows);
+            this.rowsOverview = signal(new Map<string, string[]>(this.rowsOverview()));
+          }
+        }
+      });
+    }
   }
 
   protected readonly Array = Array;

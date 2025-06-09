@@ -9,7 +9,7 @@
 
   <app-dialog [closeOnBackdrop]="false" [open]="importAsCSVOpened()" (closed)="onClose($event)"
               title="Importer des transactions (CSV)">
-    <app-import-transaction [targets]="signal(targets)()" [csvContent]="csvUploadedContent()"></app-import-transaction>
+    <app-import-transaction [mappingTargets]="signal(targets)()" [csvContent]="csvUploadedContent()" [confirmation$]="dialogCloseNotifier$$.asObservable()"></app-import-transaction>
   </app-dialog>
 
   <table class="table">

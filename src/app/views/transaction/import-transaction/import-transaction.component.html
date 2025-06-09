@@ -1,21 +1,29 @@
-<div class="is-flex is-justify-content-space-between form-container is-column-gap-1">
-  @for(target of workingTargets(); track target.targetName) {
-    <div class="target-mapping is-flex is-flex-direction-column is-fullwidth">
-      <label class="target-title">{{target.targetName}}</label>
-      <div class="select">
-      <select class="csv-header" (change)="changeFromEvent(target.targetName, $event)">
-        <option></option>
-        @for (option of csvContent() | keyvalue; track option){
-          <option>{{option.key}}</option>
-        }
-      </select>
-      </div>
-      <div class="overview is-flex is-flex-direction-column">
-        @for (value of target.overviews; track $index) {
-          <span>{{value}}</span>
-        }
-        <span>...</span>
-      </div>
-    </div>
-  }
-</div>
+<form [formGroup]="form">
+  <div class="is-flex is-justify-content-space-between form-container is-column-gap-1">
+    @for (target of mappingTargets();track $index) {
+      @for (field of target.fields;track field) {
+
+
+        <div class="target-mapping is-flex is-flex-direction-column is-fullwidth">
+          <label class="target-title">{{ field }}</label>
+          <div class="select">
+            <select [formControlName]="field" class="csv-header">
+              <option></option>
+              @for (option of csvContent() | keyvalue;track option) {
+                <option [value]="option.key">{{ option.key }}</option>
+              }
+            </select>
+          </div>
+          <div class="overview is-flex is-flex-direction-column">
+            @for (value of rowsOverview().get(field)?.slice(0, 3);track $index) {
+              <span>{{ value }}</span>
+            }
+            @if (form.get(field)?.value) {
+              <span>...</span>
+            }
+          </div>
+        </div>
+      }
+    }
+  </div>
+</form>
