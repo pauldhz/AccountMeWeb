@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImportTransactionComponent } from './import-transaction.component';
 import {TestUtils} from '../../../utils/test/test-utils';
-import {GroupBuilder} from '../../../utils/group-builder';
+import {GroupBuilder} from '../../../utils/mapping/group-builder';
 import {of} from 'rxjs';
+import {signal} from '@angular/core';
 
 describe('ImportTransactionComponent', () => {
   let component: ImportTransactionComponent;
@@ -31,7 +32,6 @@ const TARGETED_TITLES =
 
     fixture = TestBed.createComponent(ImportTransactionComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('mappingTargets', TARGETED_TITLES);
     fixture.componentRef.setInput('csvContent', CONTENT);
     fixture.componentRef.setInput('confirmation$', of('false'))
     fixture.detectChanges();
@@ -67,5 +67,13 @@ const TARGETED_TITLES =
     const overviewRows = fixture.nativeElement.querySelector('.target-mapping .overview').querySelectorAll('span');
     expect(overviewRows.length).toEqual(4);
     expect(overviewRows[0].innerText).toEqual('20.00');
+  })
+
+  it('should switch to amount signed choice', () => {
+    const additionalFieldElement = fixture.nativeElement.querySelector('.additional-field');
+    expect(additionalFieldElement.innerText).toContain('Montant typé');
+    additionalFieldElement.click();
+    fixture.detectChanges();
+    expect(additionalFieldElement.innerText).toContain('Montant & Type');
   })
 });

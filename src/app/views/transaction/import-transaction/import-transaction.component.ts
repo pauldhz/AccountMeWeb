@@ -1,9 +1,9 @@
-import {Component, Input, input, OnChanges, OnInit, signal, SimpleChanges} from '@angular/core';
+import {Component, computed, Input, input, OnChanges, OnInit, Signal, signal, SimpleChanges} from '@angular/core';
 
 import {KeyValuePipe} from '@angular/common';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {Group} from '../../../utils/group-builder';
+import {Group, GroupBuilder} from '../../../utils/mapping/group-builder';
 
 @Component({
   selector: 'app-import-transaction',
@@ -20,12 +20,40 @@ import {Group} from '../../../utils/group-builder';
  * Component responsible of mapping the given CSV to Transaction Database
  */
 export class ImportTransactionComponent implements OnChanges, OnInit {
+
+  groupBuilder = new GroupBuilder();
+
+  public SWITCH_AMOUNT_TYPE = 'switchAmountType';
+  private NB_AMOUNT_TYPE_CHOICES = 2;
+
+  private targetsWithAmountType =
+    this.groupBuilder.addGroup('Date')
+      .addGroup('Montant')
+      .addElement('Type')
+      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant typé'})
+      .addGroup('Commentaire')
+      .addGroup('Informations additionnelles')
+      .build();
+
+  private targetsWithAmountSigned =
+    this.groupBuilder.init().addGroup('Date')
+      .addGroup('Montant')
+      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant & Type'})
+      .addGroup('Commentaire')
+      .addGroup('Informations additionnelles')
+      .build();
+
   form!: FormGroup;
 
-  mappingTargets = input.required<Group[]>();
   csvContent = input.required<Map<string, string[]>>();
 
+  currentAmountTypeChoice = signal(0);
   rowsOverview = signal(new Map<string, string[]>());
+
+  mappingTargets: Signal<Group[]> = computed(() =>
+    this.currentAmountTypeChoice() % this.NB_AMOUNT_TYPE_CHOICES === 0
+    ? this.targetsWithAmountType
+    : this.targetsWithAmountSigned);
 
   @Input({required: true})
   confirmation$!: Observable<boolean>;
@@ -43,6 +71,10 @@ export class ImportTransactionComponent implements OnChanges, OnInit {
       this.initForm();
       this.changeOverviewOnTargetMappingChange();
     }
+  }
+
+  public incrementChoiceClick() {
+    this.currentAmountTypeChoice.update(value => value + 1);
   }
 
   /**
@@ -77,6 +109,4 @@ export class ImportTransactionComponent implements OnChanges, OnInit {
       });
     }
   }
-
-  protected readonly Array = Array;
 }

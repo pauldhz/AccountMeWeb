@@ -1,29 +1,37 @@
 <form [formGroup]="form">
   <div class="is-flex is-justify-content-space-between form-container is-column-gap-1">
     @for (target of mappingTargets();track $index) {
-      @for (field of target.fields;track field) {
-
-
-        <div class="target-mapping is-flex is-flex-direction-column is-fullwidth">
-          <label class="target-title">{{ field }}</label>
-          <div class="select">
-            <select [formControlName]="field" class="csv-header">
-              <option></option>
-              @for (option of csvContent() | keyvalue;track option) {
-                <option [value]="option.key">{{ option.key }}</option>
+      <div class="is-position-relative is-flex is-flex-direction-row is-column-gap-1">
+        @if (target.additionalField) {
+          <span class="icon-text is-position-absolute additional-field" (click)="incrementChoiceClick()">
+            <span style="font-size: 10px;">{{ target.additionalField.label }}</span>
+          <span class="icon">
+            <i class="fas fa-repeat"></i>
+          </span>
+          </span>
+        }
+        @for (field of target.fields;track field) {
+          <div class="target-mapping is-flex is-flex-direction-column is-fullwidth">
+            <label class="target-title">{{ field }}</label>
+            <div class="select">
+              <select [formControlName]="field" class="csv-header">
+                <option></option>
+                @for (option of csvContent() | keyvalue;track option) {
+                  <option [value]="option.key">{{ option.key }}</option>
+                }
+              </select>
+            </div>
+            <div class="overview is-flex is-flex-direction-column">
+              @for (value of rowsOverview().get(field)?.slice(0, 3);track $index) {
+                <span>{{ value }}</span>
               }
-            </select>
+              @if (form.get(field)?.value) {
+                <span>...</span>
+              }
+            </div>
           </div>
-          <div class="overview is-flex is-flex-direction-column">
-            @for (value of rowsOverview().get(field)?.slice(0, 3);track $index) {
-              <span>{{ value }}</span>
-            }
-            @if (form.get(field)?.value) {
-              <span>...</span>
-            }
-          </div>
-        </div>
-      }
+        }
+      </div>
     }
   </div>
 </form>

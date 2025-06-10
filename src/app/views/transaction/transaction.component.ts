@@ -9,7 +9,7 @@ import {EditTransactionComponent} from './edit-transaction/edit-transaction.comp
 import {BehaviorSubject, switchMap} from 'rxjs';
 import {ImportTransactionComponent} from './import-transaction/import-transaction.component';
 import {CsvUtils} from '../../utils/csv/csv-utils';
-import {GroupBuilder} from '../../utils/group-builder';
+import {GroupBuilder} from '../../utils/mapping/group-builder';
 
 @Component({
   selector: 'app-transaction',
@@ -27,14 +27,6 @@ import {GroupBuilder} from '../../utils/group-builder';
 })
 export class TransactionComponent {
 
-  groupBuilder = new GroupBuilder();
-  public targets =
-    this.groupBuilder.addGroup('Date')
-      .addGroup('Montant')
-      .addElement('Type')
-      .addGroup('Commentaire')
-      .addGroup('Informations additionnelles')
-      .build();
   private transactionService = inject(TransactionServiceGateway);
   private reload$$ = this.transactionService.reload$$();
 

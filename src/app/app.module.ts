@@ -1,6 +1,8 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {TransactionsModule} from './core/transactions/transactions.module';
+import {FaIconLibrary, FontAwesomeModule} from '@fortawesome/angular-fontawesome';
+import {faCoffee, faUser} from '@fortawesome/free-solid-svg-icons';
 
 
 @NgModule({
@@ -8,7 +10,12 @@ import {TransactionsModule} from './core/transactions/transactions.module';
   providers: [],
   imports: [
     CommonModule,
-    TransactionsModule
+    TransactionsModule,
+    FontAwesomeModule
   ]
 })
-export class AppModule { }
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    library.addIcons(faCoffee, faUser);
+  }
+}
