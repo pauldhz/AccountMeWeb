@@ -1,7 +1,7 @@
 <form [formGroup]="form">
   <div class="is-flex is-justify-content-space-between form-container is-column-gap-1">
     @for (target of mappingTargets();track $index) {
-      <div class="is-position-relative is-flex is-flex-direction-row is-column-gap-1">
+      <div [ngClass]="{group: target.additionalField}" class="is-position-relative is-flex is-flex-direction-row is-column-gap-1">
         @if (target.additionalField) {
           <span class="icon-text is-position-absolute additional-field" (click)="incrementChoiceClick()">
             <span style="font-size: 10px;">{{ target.additionalField.label }}</span>

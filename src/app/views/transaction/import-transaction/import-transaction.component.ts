@@ -1,6 +1,15 @@
-import {Component, computed, Input, input, OnChanges, OnInit, Signal, signal, SimpleChanges} from '@angular/core';
+import {
+  Component,
+  computed,
+  effect,
+  Input,
+  input,
+  OnInit,
+  Signal,
+  signal
+} from '@angular/core';
 
-import {KeyValuePipe} from '@angular/common';
+import {KeyValuePipe, NgClass} from '@angular/common';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {Group, GroupBuilder} from '../../../utils/mapping/group-builder';
@@ -11,7 +20,8 @@ import {Group, GroupBuilder} from '../../../utils/mapping/group-builder';
   templateUrl: './import-transaction.component.html',
   imports: [
     KeyValuePipe,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NgClass
   ],
   styleUrl: './import-transaction.component.scss'
 })
@@ -19,18 +29,18 @@ import {Group, GroupBuilder} from '../../../utils/mapping/group-builder';
 /**
  * Component responsible of mapping the given CSV to Transaction Database
  */
-export class ImportTransactionComponent implements OnChanges, OnInit {
+export class ImportTransactionComponent implements OnInit {
 
   groupBuilder = new GroupBuilder();
 
   public SWITCH_AMOUNT_TYPE = 'switchAmountType';
-  private NB_AMOUNT_TYPE_CHOICES = 2;
+  private NB_AMOUNT_TYPE_CHOICES = 3;
 
   private targetsWithAmountType =
     this.groupBuilder.addGroup('Date')
       .addGroup('Montant')
       .addElement('Type')
-      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant typé'})
+      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant/Type'})
       .addGroup('Commentaire')
       .addGroup('Informations additionnelles')
       .build();
@@ -38,7 +48,16 @@ export class ImportTransactionComponent implements OnChanges, OnInit {
   private targetsWithAmountSigned =
     this.groupBuilder.init().addGroup('Date')
       .addGroup('Montant')
-      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant & Type'})
+      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant signé'})
+      .addGroup('Commentaire')
+      .addGroup('Informations additionnelles')
+      .build();
+
+  private targetsWithCreditDebit =
+    this.groupBuilder.init().addGroup('Date')
+      .addGroup('Crédit')
+      .addElement('Débit')
+      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Crédit/Débit'})
       .addGroup('Commentaire')
       .addGroup('Informations additionnelles')
       .build();
@@ -52,25 +71,22 @@ export class ImportTransactionComponent implements OnChanges, OnInit {
 
   mappingTargets: Signal<Group[]> = computed(() =>
     this.currentAmountTypeChoice() % this.NB_AMOUNT_TYPE_CHOICES === 0
-    ? this.targetsWithAmountType
-    : this.targetsWithAmountSigned);
+    ? this.targetsWithAmountType : this.currentAmountTypeChoice() % this.NB_AMOUNT_TYPE_CHOICES === 1
+    ? this.targetsWithAmountSigned : this.targetsWithCreditDebit);
 
   @Input({required: true})
   confirmation$!: Observable<boolean>;
 
   constructor(private fb: FormBuilder) {
+    effect(() => {
+      this.initForm();
+      this.changeOverviewOnTargetMappingChange();
+    });
   }
+
 
   ngOnInit() {
     this.confirmation$.subscribe(() => {});
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-
-    if(changes['csvContent']) {
-      this.initForm();
-      this.changeOverviewOnTargetMappingChange();
-    }
   }
 
   public incrementChoiceClick() {
@@ -82,10 +98,14 @@ export class ImportTransactionComponent implements OnChanges, OnInit {
    * @private
    */
   private initForm() {
-    this.form = this.fb.group({});
+    if(!this.form) {
+      this.form = this.fb.group({});
+    }
     this.mappingTargets().forEach((group: Group) => {
       group.fields.forEach(target => {
-        this.form.addControl(target, this.fb.control(''));
+        if(!this.form.get(target)) {
+          this.form.addControl(target, this.fb.control(''));
+        }
         // Init overviews
         this.rowsOverview().set(target, []);
       })

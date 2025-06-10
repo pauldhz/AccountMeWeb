@@ -2,9 +2,20 @@
   min-width: 600px;
 }
 
+.target-mapping {
+  padding-top: 1rem;
+}
+
+.group {
+  border: 1px solid lightgray;
+  border-radius: 8px;
+  padding: 0 4px 8px 6px;
+  margin-top: -1px;
+
+}
+
 select {
   width: 100%;
-
 }
 
 .additional-field {
