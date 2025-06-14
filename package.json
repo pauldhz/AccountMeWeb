@@ -28,6 +28,7 @@
     "@tailwindcss/postcss": "^4.1.4",
     "bulma": "^1.0.4",
     "express": "^4.18.2",
+    "moment": "^2.30.1",
     "postcss": "^8.5.3",
     "rxjs": "~7.8.0",
     "sass": "^1.87.0",

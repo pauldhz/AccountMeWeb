@@ -1,23 +1,19 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ImportTransactionComponent } from './import-transaction.component';
 import {TestUtils} from '../../../utils/test/test-utils';
-import {GroupBuilder} from '../../../utils/mapping/group-builder';
+import {Group, GroupBuilder} from '../../../utils/mapping/group-builder';
 import {of} from 'rxjs';
 import {signal} from '@angular/core';
+import {TransactionService} from '../../../core/transaction/adapter/transaction.service';
+import {HttpClient, provideHttpClient} from '@angular/common/http';
+import {TransactionServiceGateway} from '../../../core/transaction/port/transaction.service.gateway';
+import {TransactionServiceInMemory} from '../../../core/transaction/adapter/transaction.service.in-memory.gateway';
 
 describe('ImportTransactionComponent', () => {
   let component: ImportTransactionComponent;
   let fixture: ComponentFixture<ImportTransactionComponent>;
 
   const groupBuilder = new GroupBuilder();
-
-const TARGETED_TITLES =
-    groupBuilder.addGroup('Date')
-      .addGroup('Montant')
-      .addElement('Type')
-      .addGroup('Commentaire')
-      .addGroup('Informations additionnelles')
-      .build();
 
   const CONTENT: Map<string, string[]> = new Map();
   CONTENT.set('Date', ['2025-01-01','2025-01-02','2025-01-03','2025-01-04','2025-01-05']);
@@ -26,7 +22,8 @@ const TARGETED_TITLES =
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ImportTransactionComponent]
+      imports: [ImportTransactionComponent],
+      providers: [{ provide: TransactionServiceGateway, useFactory: () => new TransactionServiceInMemory()}]
     })
     .compileComponents();
 
@@ -47,13 +44,13 @@ const TARGETED_TITLES =
     expect(targetTitles[1].innerText).toEqual('Montant');
     expect(targetTitles[2].innerText).toEqual('Type');
     expect(targetTitles[3].innerText).toEqual('Commentaire');
-    expect(targetTitles[4].innerText).toEqual('Informations additionnelles');
+    expect(targetTitles[4].innerText).toEqual('Libellé de la transaction');
   });
 
   it('should display select input with csv headers for each target', () => {
     const selects = [...fixture.nativeElement.querySelectorAll('select.csv-header')];
 
-    for(let i=0; i<TARGETED_TITLES.length; i++) {
+    for(let i=0; i<(fixture.componentInstance.mappingTargets() as Group[]).length; i++) {
       const options = [...selects[i].querySelectorAll('option')].map((option: HTMLElement) => option.innerText);
       expect(TestUtils.containsAll(options, Array.from(CONTENT.keys()))).toEqual([]);
     }

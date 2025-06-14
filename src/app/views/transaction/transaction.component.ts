@@ -27,15 +27,15 @@ import {GroupBuilder} from '../../utils/mapping/group-builder';
 })
 export class TransactionComponent {
 
-  private transactionService = inject(TransactionServiceGateway);
-  private reload$$ = this.transactionService.reload$$();
+  private transactionServiceGateway = inject(TransactionServiceGateway);
+  private reload$$ = this.transactionServiceGateway.reload$$();
 
   dialogCloseNotifier$$ = new BehaviorSubject(false);
   transactionNotifier$$ = new BehaviorSubject<void>(undefined);
 
   @ViewChild('inputFile') inputFile! : ElementRef<HTMLInputElement>;
 
-  transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionService.getTransactions$())));
+  transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionServiceGateway.getTransactions$())));
   transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
   importAsCSVOpened = signal(false);
   filename: WritableSignal<string> = signal('');

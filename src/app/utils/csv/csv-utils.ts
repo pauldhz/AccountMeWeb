@@ -6,6 +6,7 @@ export class CsvUtils {
     const content = fileContent.split("\n");
     const matrice = content.map(row => row.split(";"))
     matrice.shift();
+    matrice.pop();
     const matriceTransposed = this.transpose(matrice);
     let i= 0;
     headers.forEach(header => {

@@ -15,9 +15,10 @@
   <table class="table">
     <thead>
     <tr>
-      <th>date</th>
-      <th>comment</th>
-      <th>amount</th>
+      <th>Date de comptabilisation</th>
+      <th>Montant</th>
+      <th>Libellé</th>
+      <th>Commentaire</th>
       <th>type</th>
     </tr>
     </thead>
@@ -25,9 +26,10 @@
       @for (transaction of transactions();track transaction.id) {
         <tr>
           <td>{{ transaction.date | date: 'YYYY-MM-dd' }}</td>
-          <td>{{ transaction.comment }}</td>
           <td>{{ transaction.amount }}</td>
-          <td>{{ TransactionType[transaction.type] }}</td>
+          <td>{{ transaction.label }}</td>
+          <td>{{ transaction.comment }}</td>
+          <td>{{ transaction.type }}</td>
           <td>
             <a class="has-text-primary" (click)="affectTransactionForEdition(transaction)">editer</a>
           </td>
