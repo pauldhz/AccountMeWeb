@@ -13,7 +13,8 @@ export class DialogComponent {
   open: boolean = false;
   @Input()
   title!: string;
-
+  @Input()
+  closeOnBackdrop = true;
   @Output()
   closed = new EventEmitter<boolean>();
 
@@ -34,7 +35,7 @@ export class DialogComponent {
   }
 
   onBackdropClick(event: MouseEvent) {
-    if (event.target === this.el.nativeElement.querySelector('.dialog-backdrop')) {
+    if (this.closeOnBackdrop && event.target === this.el.nativeElement.querySelector('.dialog-backdrop')) {
       this.handleCancel();
     }
   }

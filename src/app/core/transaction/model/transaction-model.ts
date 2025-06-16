@@ -11,6 +11,7 @@ export interface Transaction {
   amount: number;
   type: TransactionType;
   comment: string;
+  label: string;
   additionalInformation?: AdditionalInformation;
 }
 

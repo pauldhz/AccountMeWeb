@@ -9,6 +9,8 @@ export abstract class TransactionServiceGateway {
 
   public abstract updateTransaction$(transaction: Transaction): Observable<boolean>;
 
+  public abstract saveTransactions$(transactions: Transaction[]): Observable<boolean>;
+
   public reload$$():BehaviorSubject<void> {
     return this._reload$$;
   }

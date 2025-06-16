@@ -24,6 +24,7 @@ export class EditTransactionComponent implements OnInit {
 
   constructor(private formBuilder: FormBuilder) {
     effect(() => {
+      console.log(this.transaction()?.id);
       this.formGroup.patchValue({
         comment: this.transaction()?.comment,
         amount: this.transaction()?.amount,

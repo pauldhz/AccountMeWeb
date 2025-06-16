@@ -1,4 +1,4 @@
-import {Component, inject, signal, WritableSignal} from '@angular/core';
+import {Component, ElementRef, inject, signal, ViewChild, WritableSignal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {Transaction, TransactionType} from '../../core/transaction/model/transaction-model';
 import {toSignal} from "@angular/core/rxjs-interop";
@@ -7,6 +7,9 @@ import {CommonModule, DatePipe} from "@angular/common";
 import {DialogComponent} from '../../shared/component/dialog/dialog.component';
 import {EditTransactionComponent} from './edit-transaction/edit-transaction.component';
 import {BehaviorSubject, switchMap} from 'rxjs';
+import {ImportTransactionComponent} from './import-transaction/import-transaction.component';
+import {CsvUtils} from '../../utils/csv/csv-utils';
+import {GroupBuilder} from '../../utils/mapping/group-builder';
 
 @Component({
   selector: 'app-transaction',
@@ -15,7 +18,8 @@ import {BehaviorSubject, switchMap} from 'rxjs';
     DatePipe,
     CommonModule,
     DialogComponent,
-    EditTransactionComponent
+    EditTransactionComponent,
+    ImportTransactionComponent
   ],
   templateUrl: './transaction.component.html',
   standalone: true,
@@ -23,15 +27,21 @@ import {BehaviorSubject, switchMap} from 'rxjs';
 })
 export class TransactionComponent {
 
-  private transactionService = inject(TransactionServiceGateway);
-  private reload$$ = this.transactionService.reload$$();
+  private transactionServiceGateway = inject(TransactionServiceGateway);
+  private reload$$ = this.transactionServiceGateway.reload$$();
+
+  dialogCloseNotifier$$ = new BehaviorSubject(false);
   transactionNotifier$$ = new BehaviorSubject<void>(undefined);
 
+  @ViewChild('inputFile') inputFile! : ElementRef<HTMLInputElement>;
+
+  transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionServiceGateway.getTransactions$())));
+  transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
+  importAsCSVOpened = signal(false);
+  filename: WritableSignal<string> = signal('');
+  csvUploadedContent: WritableSignal<Map<string, string[]>> = signal(new Map());
 
   constructor() {}
-
-  transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionService.getTransactions$())));
-  transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
 
   affectTransactionForEdition(transaction: Transaction): void {
     this.transactionSelectedForEdition.set(transaction)
@@ -44,5 +54,30 @@ export class TransactionComponent {
     this.transactionSelectedForEdition.set(undefined);
   }
 
+  onFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if(input.files && input.files?.length > 0) {
+      const file: File | null = input.files[0] ?? null;
+      const reader = new FileReader();
+        this.filename.set(file.name);
+        this.importAsCSVOpened.set(true);
+      reader.onload = () => {
+        const fileContent = reader.result as string;
+        this.csvUploadedContent.set(CsvUtils.getContent(fileContent, ";"));
+      }
+      reader.readAsText(file);
+    }
+  }
+
+  onClose(confirmed: boolean) {
+    if(confirmed) {
+      this.dialogCloseNotifier$$.next(true);
+    }
+    this.importAsCSVOpened.set(false);
+    this.inputFile.nativeElement.value = '';
+    this.filename.set('');
+  }
+
   protected readonly TransactionType = TransactionType;
+  protected readonly signal = signal;
 }
