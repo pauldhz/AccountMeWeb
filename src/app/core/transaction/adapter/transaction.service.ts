@@ -19,6 +19,8 @@ export class TransactionService extends TransactionServiceGateway {
     return this.http.put<boolean>('/account-me/transactions', transaction);
   }
 
-
+  saveTransactions$(transactions: Transaction[]): Observable<boolean> {
+    return this.http.post<boolean>('/account-me/transactions', transactions);
+  }
 
 }

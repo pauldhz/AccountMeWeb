@@ -10,12 +10,14 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
       date: new Date(),
       amount: 20.00,
       type: TransactionType.DEBIT,
+      label: 'Amazon',
       comment: 'no comment for this debit'
     },
     {
       id: '02e07ddc-e9c7-4283-9343-a9bd3f2a0301',
       date: new Date(),
       amount: 30.00,
+      label: 'Amazon',
       type: TransactionType.DEBIT,
       comment: 'it is too much'
     },
@@ -23,6 +25,7 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
       id: '8cdfb38a-0dc7-4100-8de1-f9a9628eb086',
       date: new Date(),
       amount: 15.45,
+      label: 'Amazon',
       type: TransactionType.CREDIT,
       comment: 'no comment for this credit'
     },
@@ -37,6 +40,10 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
     const index = arrayCopy.findIndex(tmpTransaction => transaction.id == tmpTransaction.id);
     arrayCopy[index] = transaction;
     this.transactions = JSON.parse(JSON.stringify(arrayCopy));
+    return of(true);
+  }
+
+  saveTransactions$(transactions: Transaction[]): Observable<boolean> {
     return of(true);
   }
 }
