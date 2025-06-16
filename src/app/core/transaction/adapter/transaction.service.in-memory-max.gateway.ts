@@ -3,6 +3,8 @@ import {Observable, of} from 'rxjs';
 import {TransactionServiceGateway} from '../port/transaction.service.gateway';
 import {Transaction, TransactionType} from '../model/transaction-model';
 import {v4 as uuidv4} from 'uuid';
+import {randomInt} from 'node:crypto';
+import {type} from 'node:os';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +32,7 @@ export class TransactionServiceInMemoryMax extends TransactionServiceGateway {
       type = TransactionType.DEBIT;
     }
     return {
-      uuid: uuidv4(),
+      id: uuidv4(),
       date: new Date(),
       amount: 10 + (i * randomInt),
       type: type,

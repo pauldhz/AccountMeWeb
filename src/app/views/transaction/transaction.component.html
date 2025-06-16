@@ -1,0 +1,34 @@
+<div class="container">
+  <h1 class="title is-4">Mes transactions</h1>
+
+  <app-dialog (closed)="editTransaction($event)" [open]="transactionSelectedForEdition() !== undefined"
+              title="Editer une transaction">
+    <app-edit-transaction [editConfirmation$]="transactionNotifier$$.asObservable()"
+                          [transaction]="transactionSelectedForEdition()"></app-edit-transaction>
+  </app-dialog>
+
+  <table class="table">
+    <thead>
+    <tr>
+      <th>date</th>
+      <th>comment</th>
+      <th>amount</th>
+      <th>type</th>
+    </tr>
+    </thead>
+    <tbody>
+      @for (transaction of transactions();track transaction.id) {
+        <tr>
+          <td>{{ transaction.date | date: 'YYYY-MM-dd' }}</td>
+          <td>{{ transaction.comment }}</td>
+          <td>{{ transaction.amount }}</td>
+          <td>{{ TransactionType[transaction.type] }}</td>
+          <td>
+            <a class="has-text-primary" (click)="affectTransactionForEdition(transaction)">editer</a>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <a class="has-text-primary" role="button" routerLink="add">Ajouter une transaction</a>
+</div>
