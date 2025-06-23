@@ -9,8 +9,10 @@ import {v4 as uuidv4} from 'uuid';
 import moment from 'moment';
 import {TransactionServiceGateway} from '../../../core/transaction/port/transaction.service.gateway';
 
-export enum AmountType {
-  TYPED, SIGNED, CREDITDEBIT
+enum AmountProposition {
+  TYPED,
+  SIGNED,
+  CREDITDEBIT
 }
 
 @Component({
@@ -32,8 +34,6 @@ export class ImportTransactionComponent implements OnInit {
 
   private groupBuilder = new GroupBuilder();
 
-  private SWITCH_AMOUNT_TYPE = 'switchAmountType';
-
   private AMOUNT_CONTROL_NAME = 'Montant';
   private DATE_CONTROL_NAME = 'Date';
   private TYPE_CONTROL_NAME = 'Type';
@@ -42,49 +42,60 @@ export class ImportTransactionComponent implements OnInit {
   private LABEL_CONTROL_NAME = "Libellé de la transaction"
   private COMMENT_CONTROL_NAME = 'Commentaire';
 
-  private targetsWithAmountType =
-    this.groupBuilder.addGroup(this.DATE_CONTROL_NAME)
-      .addGroup(this.AMOUNT_CONTROL_NAME)
-      .addElement(this.TYPE_CONTROL_NAME)
-      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant/Type'})
-      .addGroup(this.COMMENT_CONTROL_NAME)
-      .addGroup(this.LABEL_CONTROL_NAME)
-      .build();
+  private readonly TYPED_AMOUNT_PROPOSITION = 'Montant/Type';
+  private readonly SIGNED_AMOUNT_PROPOSITION = 'Montant signé';
+  private readonly CREDIT_DEBIT_PROPOSITION = 'Crédit/Débit';
 
-  private targetsWithAmountSigned =
-    this.groupBuilder.init().addGroup(this.DATE_CONTROL_NAME)
-      .addGroup(this.AMOUNT_CONTROL_NAME)
-      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Montant signé'})
-      .addGroup(this.COMMENT_CONTROL_NAME)
-      .addGroup(this.LABEL_CONTROL_NAME)
-      .build();
-
-  private targetsWithCreditDebit =
-    this.groupBuilder.init().addGroup(this.DATE_CONTROL_NAME)
-      .addGroup(this.CREDIT_CONTROL_NAME)
-      .addElement(this.DEBIT_CONTROL_NAME)
-      .addAdditionalField({key: this.SWITCH_AMOUNT_TYPE, label: 'Crédit/Débit'})
-      .addGroup(this.COMMENT_CONTROL_NAME)
-      .addGroup(this.LABEL_CONTROL_NAME)
-      .build();
-
-  private AMOUNT_TYPE_CHOICES = new Map<AmountType, Group[]>([
-    [AmountType.TYPED, this.targetsWithAmountType],
-    [AmountType.SIGNED, this.targetsWithAmountSigned],
-    [AmountType.CREDITDEBIT, this.targetsWithCreditDebit],
+  private amountPropositions = new Map([
+    [AmountProposition.TYPED, this.TYPED_AMOUNT_PROPOSITION],
+    [AmountProposition.SIGNED, this.SIGNED_AMOUNT_PROPOSITION],
+    [AmountProposition.CREDITDEBIT, this.CREDIT_DEBIT_PROPOSITION],
   ]);
+
+  private readonly AMOUNT_GROUP = 'Amount Group';
+
+  private targets =
+    this.groupBuilder
+      .addGroupUniqueProposition(this.DATE_CONTROL_NAME)
+      .addGroup(this.AMOUNT_GROUP)
+        .addProposition(this.TYPED_AMOUNT_PROPOSITION).addField(this.AMOUNT_CONTROL_NAME).addField(this.TYPE_CONTROL_NAME)
+        .addProposition(this.SIGNED_AMOUNT_PROPOSITION).addField(this.AMOUNT_CONTROL_NAME)
+        .addProposition(this.CREDIT_DEBIT_PROPOSITION).addField(this.CREDIT_CONTROL_NAME).addField(this.DEBIT_CONTROL_NAME)
+      .addGroupUniqueProposition(this.COMMENT_CONTROL_NAME)
+      .addGroupUniqueProposition(this.LABEL_CONTROL_NAME)
+      .build();
 
   form!: FormGroup;
 
   csvContent = input.required<Map<string, string[]>>();
-
-  amountTypeState = signal(0);
-  dateFormatState = signal('DD/MM/YYYY');
-
   rowsOverview = signal(new Map<string, string[]>());
 
-  mappingTargets: Signal<Group[]|undefined> = computed(() =>
-    this.AMOUNT_TYPE_CHOICES.get(this.amountTypeState() % this.AMOUNT_TYPE_CHOICES.size));
+  private selection = signal(this.buildSelection());
+  private dateFormatState = signal('DD/MM/YYYY');
+
+  mappingTargets: Signal<Group[]|undefined> = computed(() => {
+    let map = [...  this.targets];
+    this.selection().forEach((selectedProposition, groupName) => {
+      map.forEach(group => {
+        if(group.name === groupName) {
+          group.selectedProposition = group.propositions.find(proposition => proposition.label === selectedProposition);
+        } else {
+          group.selectedProposition = group.propositions[0];
+        }
+      });
+    });
+    return map;
+  });
+
+  amountTypeState = computed<AmountProposition | null>(() => {
+    let result = null;
+    this.amountPropositions.forEach((value, key) => {
+      if(this.selection().get(this.AMOUNT_GROUP) === value) {
+        result = key;
+      }
+    })
+    return result;
+  })
 
   @Input({required: true})
   confirmation$!: Observable<boolean>;
@@ -105,8 +116,13 @@ export class ImportTransactionComponent implements OnInit {
     });
   }
 
-  public incrementChoiceClick() {
-    this.amountTypeState.update(value => value + 1);
+  public updateSelection(group: Group, selectedValue: EventTarget | null) {
+    if(!group.name || selectedValue === null) {
+      return;
+    }
+    const updatedSelection = new Map(this.selection());
+    updatedSelection.set(group.name, (selectedValue as HTMLSelectElement).value);
+    this.selection.set(updatedSelection);
   }
 
   private clearForm() {
@@ -131,7 +147,7 @@ export class ImportTransactionComponent implements OnInit {
     const amounts = this.csvContent().get(this.form.get(this.AMOUNT_CONTROL_NAME)?.value)  as string[];
 
     switch (this.amountTypeState()) {
-      case AmountType.SIGNED:
+      case AmountProposition.SIGNED:
         for(let i=0; i<amounts?.length; i++) {
           transactions.push({
             date: moment(dates[i], this.dateFormatState()).toDate(),
@@ -144,7 +160,7 @@ export class ImportTransactionComponent implements OnInit {
         }
 
       break;
-      case AmountType.TYPED:
+      case AmountProposition.TYPED:
         const types = this.csvContent().get(this.form.get(this.AMOUNT_CONTROL_NAME)?.value) as string [];
         for(let i=0; i<amounts?.length; i++) {
           transactions.push({
@@ -158,7 +174,7 @@ export class ImportTransactionComponent implements OnInit {
         }
 
       break;
-      case AmountType.CREDITDEBIT:
+      case AmountProposition.CREDITDEBIT:
         const credits = this.csvContent().get(this.form.get(this.CREDIT_CONTROL_NAME)?.value) as string[];
         const debits = this.csvContent().get(this.form.get(this.DEBIT_CONTROL_NAME)?.value) as string[];
         for(let i=0; i<credits.length; i++) {
@@ -172,6 +188,8 @@ export class ImportTransactionComponent implements OnInit {
           });
         }
       break;
+      default:
+        console.log("formulaire invalide");
     }
 
     return transactions;
@@ -186,13 +204,13 @@ export class ImportTransactionComponent implements OnInit {
       this.form = this.fb.group({});
     }
     this.mappingTargets()?.forEach((group: Group) => {
-      group.fields.forEach(target => {
+      group.propositions.forEach(proposition => proposition.fields.forEach(target => {
         if(!this.form.get(target)) {
           this.form.addControl(target, this.fb.control(''));
         }
         // Init overviews
         this.rowsOverview().set(target, []);
-      })
+      }))
     });
   }
 
@@ -212,6 +230,17 @@ export class ImportTransactionComponent implements OnInit {
         }
       });
     }
+  }
+
+  private buildSelection() {
+    const selection = new Map<string, string>();
+    this.targets.forEach(group => {
+      if(group.name) {
+        selection.set(group.name, group.propositions[0].label);
+      }
+    });
+
+    return selection;
   }
 
   private normalizeAmount(amount: string): number {
