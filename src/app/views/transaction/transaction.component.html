@@ -24,7 +24,7 @@
 
   <app-dialog [closeOnBackdrop]="false" [open]="importAsCSVOpened()" (closed)="onClose($event)"
               title="Importer des transactions (CSV)">
-    <app-import-transaction [csvContent]="csvUploadedContent()" [confirmation$]="dialogCloseNotifier$$.asObservable()"></app-import-transaction>
+    <app-import-transaction [csvContentUploaded]="csvUploadedContent()" [confirmation$]="dialogCloseNotifier$$.asObservable()"></app-import-transaction>
   </app-dialog>
 
   <table class="table">

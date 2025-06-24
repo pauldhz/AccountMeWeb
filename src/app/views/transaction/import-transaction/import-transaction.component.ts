@@ -32,8 +32,11 @@ enum AmountProposition {
  */
 export class ImportTransactionComponent implements OnInit {
 
+  form!: FormGroup;
+
   private groupBuilder = new GroupBuilder();
 
+  /* Fields necessary for backend */
   private readonly AMOUNT_CONTROL_NAME = 'Montant';
   private readonly DATE_CONTROL_NAME = 'Date';
   private readonly TYPE_CONTROL_NAME = 'Type';
@@ -60,14 +63,13 @@ export class ImportTransactionComponent implements OnInit {
   private readonly VERBOSE_FR = 'dddd D MMMM YYYY'; // ex: lundi 16 juin 2025
   private readonly VERBOSE_EN = 'dddd, MMMM D, YYYY'; // ex: Monday, June 16, 2025
 
-
-  private amountPropositions = new Map([
+  private readonly amountPropositions = new Map([
     [AmountProposition.TYPED, this.TYPED_AMOUNT_PROPOSITION],
     [AmountProposition.SIGNED, this.SIGNED_AMOUNT_PROPOSITION],
     [AmountProposition.CREDITDEBIT, this.CREDIT_DEBIT_PROPOSITION],
   ]);
 
-  private targets =
+  private readonly targets =
     this.groupBuilder
       .addGroup(this.DATE_CONTROL_NAME)
       .addPropositionUniqueField(this.ISO_FORMAT)
@@ -89,15 +91,14 @@ export class ImportTransactionComponent implements OnInit {
       .addGroupUniqueProposition(this.LABEL_CONTROL_NAME)
       .build();
 
-  form!: FormGroup;
-
-  csvContent = input.required<Map<string, string[]>>();
+  csvContentUploaded = input.required<Map<string, string[]>>();
   rowsOverview = signal(new Map<string, string[]>());
 
-  private selection = signal(this.buildSelection());
-
-  mappingTargets: Signal<Group[]|undefined> = computed(() => {
-    let map = [...  this.targets];
+  /** Look at group builder documentation.
+   * The definitive structure to display for mapping
+   */
+  mappingForSelectedPropositions: Signal<Group[]|undefined> = computed(() => {
+    let map = [... this.targets];
     this.selection().forEach((selectedProposition, groupName) => {
       map.forEach(group => {
         if(group.name === groupName) {
@@ -110,7 +111,10 @@ export class ImportTransactionComponent implements OnInit {
     return map;
   });
 
-  amountTypeState = computed<AmountProposition | null>(() => {
+  private selection = signal(this.buildSelection());
+
+  private dateFormatState = computed<string | null>(() => this.selection().get(this.DATE_CONTROL_NAME) || null);
+  private amountTypeState = computed<AmountProposition | null>(() => {
     let result = null;
     this.amountPropositions.forEach((value, key) => {
       if(this.selection().get(this.AMOUNT_GROUP) === value) {
@@ -119,8 +123,6 @@ export class ImportTransactionComponent implements OnInit {
     })
     return result;
   });
-
-  dateFormatState = computed<string | null>(() => this.selection().get(this.DATE_CONTROL_NAME) || null);
 
   @Input({required: true})
   confirmation$!: Observable<boolean>;
@@ -141,7 +143,12 @@ export class ImportTransactionComponent implements OnInit {
     });
   }
 
-  public updateSelection(group: Group, selectedValue: EventTarget | null) {
+  /**
+   * Update selection that user changed.
+   * @param group
+   * @param selectedValue
+   */
+  updateSelection(group: Group, selectedValue: EventTarget | null) {
     if(!group.name || selectedValue === null) {
       return;
     }
@@ -150,6 +157,10 @@ export class ImportTransactionComponent implements OnInit {
     this.selection.set(updatedSelection);
   }
 
+  /**
+   * Clear form when successfully submitted.
+   * @private
+   */
   private clearForm() {
     if(!this.form) {
       return;
@@ -162,14 +173,18 @@ export class ImportTransactionComponent implements OnInit {
     }
   }
 
+  /**
+   * Build transactions set from forms to send to backend
+   * @private
+   */
   private formToTransactions(): Transaction[] {
 
     const transactions: Transaction[] = [];
 
-    const dates = this.csvContent().get(this.form.get(this.DATE_CONTROL_NAME)?.value) as string[];
-    const comments = this.csvContent().get(this.form.get(this.COMMENT_CONTROL_NAME)?.value)  as string[];
-    const labels = this.csvContent().get(this.form.get(this.LABEL_CONTROL_NAME)?.value)  as string[];
-    const amounts = this.csvContent().get(this.form.get(this.AMOUNT_CONTROL_NAME)?.value)  as string[];
+    const dates = this.csvContentUploaded().get(this.form.get(this.DATE_CONTROL_NAME)?.value) as string[];
+    const comments = this.csvContentUploaded().get(this.form.get(this.COMMENT_CONTROL_NAME)?.value)  as string[];
+    const labels = this.csvContentUploaded().get(this.form.get(this.LABEL_CONTROL_NAME)?.value)  as string[];
+    const amounts = this.csvContentUploaded().get(this.form.get(this.AMOUNT_CONTROL_NAME)?.value)  as string[];
 
     switch (this.amountTypeState()) {
       case AmountProposition.SIGNED:
@@ -186,7 +201,7 @@ export class ImportTransactionComponent implements OnInit {
 
       break;
       case AmountProposition.TYPED:
-        const types = this.csvContent().get(this.form.get(this.AMOUNT_CONTROL_NAME)?.value) as string [];
+        const types = this.csvContentUploaded().get(this.form.get(this.AMOUNT_CONTROL_NAME)?.value) as string [];
         for(let i=0; i<amounts?.length; i++) {
           transactions.push({
             date: moment(dates[i], (this.dateFormatState() as string)).toDate(),
@@ -200,8 +215,8 @@ export class ImportTransactionComponent implements OnInit {
 
       break;
       case AmountProposition.CREDITDEBIT:
-        const credits = this.csvContent().get(this.form.get(this.CREDIT_CONTROL_NAME)?.value) as string[];
-        const debits = this.csvContent().get(this.form.get(this.DEBIT_CONTROL_NAME)?.value) as string[];
+        const credits = this.csvContentUploaded().get(this.form.get(this.CREDIT_CONTROL_NAME)?.value) as string[];
+        const debits = this.csvContentUploaded().get(this.form.get(this.DEBIT_CONTROL_NAME)?.value) as string[];
         for(let i=0; i<credits.length; i++) {
           transactions.push({
             date: moment(dates[i], (this.dateFormatState() as string)).toDate(),
@@ -228,7 +243,7 @@ export class ImportTransactionComponent implements OnInit {
     if(!this.form) {
       this.form = this.fb.group({});
     }
-    this.mappingTargets()?.forEach((group: Group) => {
+    this.mappingForSelectedPropositions()?.forEach((group: Group) => {
       group.propositions.forEach(proposition => proposition.fields.forEach(target => {
         const input = this.form.get(target) as FormControl;
         if(!input) {
@@ -256,7 +271,7 @@ export class ImportTransactionComponent implements OnInit {
       }
       control.valueChanges.subscribe({
         next: selectedColumn => {
-          const rows = this.csvContent().get(selectedColumn);
+          const rows = this.csvContentUploaded().get(selectedColumn);
           if (rows) {
             this.rowsOverview().set(name, rows);
             this.rowsOverview = signal(new Map<string, string[]>(this.rowsOverview()));
@@ -266,6 +281,10 @@ export class ImportTransactionComponent implements OnInit {
     }
   }
 
+  /**
+   * Build selection made by user for managing states (amount type, date format, ...)
+   * @private
+   */
   private buildSelection() {
     const selection = new Map<string, string>();
     this.targets.forEach(group => {
@@ -277,6 +296,11 @@ export class ImportTransactionComponent implements OnInit {
     return selection;
   }
 
+  /**
+   * Normalize amounts : remove signs because type (credit,debit) is used for it
+   * @param amount the amount.
+   * @private
+   */
   private normalizeAmount(amount: string): number {
     return Number(amount
       .replace('+','')

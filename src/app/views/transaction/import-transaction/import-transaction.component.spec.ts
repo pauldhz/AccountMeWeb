@@ -13,8 +13,6 @@ describe('ImportTransactionComponent', () => {
   let component: ImportTransactionComponent;
   let fixture: ComponentFixture<ImportTransactionComponent>;
 
-  const groupBuilder = new GroupBuilder();
-
   const CONTENT: Map<string, string[]> = new Map();
   CONTENT.set('Date', ['2025-01-01','2025-01-02','2025-01-03','2025-01-04','2025-01-05']);
   CONTENT.set('Amount', ['20.00', '21.00', '22.00', '23.00', '24.00']);
@@ -29,7 +27,7 @@ describe('ImportTransactionComponent', () => {
 
     fixture = TestBed.createComponent(ImportTransactionComponent);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('csvContent', CONTENT);
+    fixture.componentRef.setInput('csvContentUploaded', CONTENT);
     fixture.componentRef.setInput('confirmation$', of('false'))
     fixture.detectChanges();
   });
@@ -50,7 +48,7 @@ describe('ImportTransactionComponent', () => {
   it('should display select input with csv headers for each target', () => {
     const selects = [...fixture.nativeElement.querySelectorAll('select.csv-header')];
 
-    for(let i=0; i<(fixture.componentInstance.mappingTargets() as Group[]).length; i++) {
+    for(let i=0; i<(fixture.componentInstance.mappingForSelectedPropositions() as Group[]).length; i++) {
       const options = [...selects[i].querySelectorAll('option')].map((option: HTMLElement) => option.innerText);
       expect(TestUtils.containsAll(options, Array.from(CONTENT.keys()))).toEqual([]);
     }

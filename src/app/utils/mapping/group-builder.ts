@@ -1,4 +1,11 @@
-import {group} from '@angular/animations';
+/**
+ * The goal of the group builder is to propose something clear for the csv import form with mapping.
+ * Group : A group of propositions.
+ * Proposition : A set of fields :
+ *  - If there are multiple propositions, a select with the propositions should be proposed.
+ *  - When a proposition is selected, its fields are displayed
+ * Field : A string to be proposed in import for mapping.
+ */
 
 export interface AdditionalField {
   key: string;
@@ -21,15 +28,6 @@ export class GroupBuilder {
   private groups: Group[] = [];
   private currentGroup: Group | null = null;
   private currentProposition: Proposition | null = null;
-  private uniqueProps: Set<Proposition> = new Set();
-
-  public init(): this {
-    this.groups = [];
-    this.currentGroup = null;
-    this.currentProposition = null;
-    this.uniqueProps.clear();
-    return this;
-  }
 
   public addGroup(name?: string): this {
     this.pushCurrent();
@@ -60,7 +58,6 @@ export class GroupBuilder {
       label: field,
       fields: [field]
     };
-    this.uniqueProps.add(this.currentProposition);
 
     return this;
   }
@@ -119,17 +116,8 @@ export class GroupBuilder {
     };
 
     this.currentGroup.propositions.push(prop);
-    this.uniqueProps.add(prop);
 
     return this;
   }
-}
-
-export function getPropositionsFields(groups: Group[], groupName: string): Map<string, string[]> {
-  const map = new Map<string, string[]>();
-  groups.find(group => group.name === groupName)?.propositions.forEach((proposition) => {
-    map.set(proposition.label, proposition.fields);
-  });
-  return map;
 }
 

@@ -1,6 +1,6 @@
 <form [formGroup]="form">
   <div class="is-flex is-justify-content-space-between form-container is-column-gap-1">
-    @for (target of mappingTargets();track $index) {
+    @for (target of mappingForSelectedPropositions();track $index) {
       <div [ngClass]="{group: target.propositions.length > 1}" class="is-position-relative is-flex is-flex-direction-row is-column-gap-1">
         @if (target.propositions.length > 1) {
           <div class="select-proposition select is-position-absolute">
@@ -17,7 +17,7 @@
             <div class="select">
               <select [formControlName]="field" class="csv-header">
                 <option></option>
-                @for (option of csvContent() | keyvalue;track option) {
+                @for (option of csvContentUploaded() | keyvalue;track option) {
                   <option [value]="option.key">{{ option.key }}</option>
                 }
               </select>
