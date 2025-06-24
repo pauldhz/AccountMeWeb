@@ -33,7 +33,7 @@ export class GroupBuilder {
 
   public addGroup(name?: string): this {
     this.pushCurrent();
-    this.currentGroup = { name: name, propositions: [], selectedProposition: undefined };
+    this.currentGroup = {name: name, propositions: [], selectedProposition: undefined};
     this.currentProposition = null;
     return this;
   }
@@ -55,7 +55,7 @@ export class GroupBuilder {
   public addGroupUniqueProposition(field: string): this {
     this.pushCurrent();
 
-    this.currentGroup = { propositions: [], selectedProposition: undefined };
+    this.currentGroup = {propositions: [], selectedProposition: undefined};
     this.currentProposition = {
       label: field,
       fields: [field]
@@ -100,6 +100,28 @@ export class GroupBuilder {
       this.groups.push(this.currentGroup);
       this.currentGroup = null;
     }
+  }
+
+  public addPropositionUniqueField(propositionLabel: string): this {
+    if (!this.currentGroup) {
+      throw new Error('No group initialized. Call addGroup() first.');
+    }
+
+    if (!this.currentGroup.name) {
+      throw new Error('Cannot add a proposition with a field named after the group without setting group name. Use setGroupName().');
+    }
+
+    const fieldName = this.currentGroup.name;
+
+    const prop: Proposition = {
+      label: propositionLabel,
+      fields: [fieldName]
+    };
+
+    this.currentGroup.propositions.push(prop);
+    this.uniqueProps.add(prop);
+
+    return this;
   }
 }
 

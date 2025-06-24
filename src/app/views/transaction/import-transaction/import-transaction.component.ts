@@ -1,7 +1,7 @@
 import {Component, computed, effect, Input, input, OnInit, Signal, signal} from '@angular/core';
 
 import {KeyValuePipe, NgClass} from '@angular/common';
-import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Observable} from 'rxjs';
 import {Group, GroupBuilder} from '../../../utils/mapping/group-builder';
 import {Transaction, TransactionType} from '../../../core/transaction/model/transaction-model';
@@ -34,17 +34,32 @@ export class ImportTransactionComponent implements OnInit {
 
   private groupBuilder = new GroupBuilder();
 
-  private AMOUNT_CONTROL_NAME = 'Montant';
-  private DATE_CONTROL_NAME = 'Date';
-  private TYPE_CONTROL_NAME = 'Type';
-  private CREDIT_CONTROL_NAME = 'Credit';
-  private DEBIT_CONTROL_NAME = 'Debit';
-  private LABEL_CONTROL_NAME = "Libellé de la transaction"
-  private COMMENT_CONTROL_NAME = 'Commentaire';
+  private readonly AMOUNT_CONTROL_NAME = 'Montant';
+  private readonly DATE_CONTROL_NAME = 'Date';
+  private readonly TYPE_CONTROL_NAME = 'Type';
+  private readonly CREDIT_CONTROL_NAME = 'Credit';
+  private readonly DEBIT_CONTROL_NAME = 'Debit';
+  private readonly LABEL_CONTROL_NAME = "Libellé de la transaction"
+  private readonly COMMENT_CONTROL_NAME = 'Commentaire';
+
+  private readonly AMOUNT_GROUP = 'Amount Group';
 
   private readonly TYPED_AMOUNT_PROPOSITION = 'Montant/Type';
   private readonly SIGNED_AMOUNT_PROPOSITION = 'Montant signé';
   private readonly CREDIT_DEBIT_PROPOSITION = 'Crédit/Débit';
+
+  private readonly ISO_FORMAT = 'YYYY-MM-DD'; // ex: 2025-06-16
+  private readonly FRENCH_FORMAT = 'DD/MM/YYYY'; // ex: 16/06/2025
+  private readonly US_FORMAT = 'MM/DD/YYYY'; // ex: 06/16/2025
+  private readonly COMPACT_FORMAT = 'YYYYMMDD'; // ex: 20250616
+  private readonly DATETIME_ISO = 'YYYY-MM-DDTHH:mm:ss'; // ex: 2025-06-16T14:30:00
+  private readonly DATETIME_FULL_FR = 'DD/MM/YYYY HH:mm:ss'; // ex: 16/06/2025 14:30:00
+  private readonly DATETIME_FULL_US = 'MM/DD/YYYY hh:mm A'; // ex: 06/16/2025 02:30 PM
+  private readonly RFC_2822_FORMAT = 'ddd, DD MMM YYYY HH:mm:ss ZZ'; // ex: Mon, 16 Jun 2025 14:30:00 +0200
+  private readonly SHORT_DATE = 'DD/MM/YY'; // ex: 16/06/25
+  private readonly VERBOSE_FR = 'dddd D MMMM YYYY'; // ex: lundi 16 juin 2025
+  private readonly VERBOSE_EN = 'dddd, MMMM D, YYYY'; // ex: Monday, June 16, 2025
+
 
   private amountPropositions = new Map([
     [AmountProposition.TYPED, this.TYPED_AMOUNT_PROPOSITION],
@@ -52,15 +67,24 @@ export class ImportTransactionComponent implements OnInit {
     [AmountProposition.CREDITDEBIT, this.CREDIT_DEBIT_PROPOSITION],
   ]);
 
-  private readonly AMOUNT_GROUP = 'Amount Group';
-
   private targets =
     this.groupBuilder
-      .addGroupUniqueProposition(this.DATE_CONTROL_NAME)
+      .addGroup(this.DATE_CONTROL_NAME)
+      .addPropositionUniqueField(this.ISO_FORMAT)
+      .addPropositionUniqueField(this.FRENCH_FORMAT)
+      .addPropositionUniqueField(this.US_FORMAT)
+      .addPropositionUniqueField(this.COMPACT_FORMAT)
+      .addPropositionUniqueField(this.DATETIME_ISO)
+      .addPropositionUniqueField(this.DATETIME_FULL_FR)
+      .addPropositionUniqueField(this.DATETIME_FULL_US)
+      .addPropositionUniqueField(this.RFC_2822_FORMAT)
+      .addPropositionUniqueField(this.SHORT_DATE)
+      .addPropositionUniqueField(this.VERBOSE_FR)
+      .addPropositionUniqueField(this.VERBOSE_EN)
       .addGroup(this.AMOUNT_GROUP)
-        .addProposition(this.TYPED_AMOUNT_PROPOSITION).addField(this.AMOUNT_CONTROL_NAME).addField(this.TYPE_CONTROL_NAME)
-        .addProposition(this.SIGNED_AMOUNT_PROPOSITION).addField(this.AMOUNT_CONTROL_NAME)
-        .addProposition(this.CREDIT_DEBIT_PROPOSITION).addField(this.CREDIT_CONTROL_NAME).addField(this.DEBIT_CONTROL_NAME)
+      .addProposition(this.TYPED_AMOUNT_PROPOSITION).addField(this.AMOUNT_CONTROL_NAME).addField(this.TYPE_CONTROL_NAME)
+      .addProposition(this.SIGNED_AMOUNT_PROPOSITION).addField(this.AMOUNT_CONTROL_NAME)
+      .addProposition(this.CREDIT_DEBIT_PROPOSITION).addField(this.CREDIT_CONTROL_NAME).addField(this.DEBIT_CONTROL_NAME)
       .addGroupUniqueProposition(this.COMMENT_CONTROL_NAME)
       .addGroupUniqueProposition(this.LABEL_CONTROL_NAME)
       .build();
@@ -71,7 +95,6 @@ export class ImportTransactionComponent implements OnInit {
   rowsOverview = signal(new Map<string, string[]>());
 
   private selection = signal(this.buildSelection());
-  private dateFormatState = signal('DD/MM/YYYY');
 
   mappingTargets: Signal<Group[]|undefined> = computed(() => {
     let map = [...  this.targets];
@@ -95,7 +118,9 @@ export class ImportTransactionComponent implements OnInit {
       }
     })
     return result;
-  })
+  });
+
+  dateFormatState = computed<string | null>(() => this.selection().get(this.DATE_CONTROL_NAME) || null);
 
   @Input({required: true})
   confirmation$!: Observable<boolean>;
@@ -150,7 +175,7 @@ export class ImportTransactionComponent implements OnInit {
       case AmountProposition.SIGNED:
         for(let i=0; i<amounts?.length; i++) {
           transactions.push({
-            date: moment(dates[i], this.dateFormatState()).toDate(),
+            date: moment(dates[i], (this.dateFormatState() as string)).toDate(),
             id: uuidv4(),
             label: labels[i],
             amount: Math.abs(this.normalizeAmount(amounts[i])),
@@ -164,7 +189,7 @@ export class ImportTransactionComponent implements OnInit {
         const types = this.csvContent().get(this.form.get(this.AMOUNT_CONTROL_NAME)?.value) as string [];
         for(let i=0; i<amounts?.length; i++) {
           transactions.push({
-            date: moment(dates[i], this.dateFormatState()).toDate(),
+            date: moment(dates[i], (this.dateFormatState() as string)).toDate(),
             id: uuidv4(),
             label: labels[i],
             amount: this.normalizeAmount(amounts[i]),
@@ -179,7 +204,7 @@ export class ImportTransactionComponent implements OnInit {
         const debits = this.csvContent().get(this.form.get(this.DEBIT_CONTROL_NAME)?.value) as string[];
         for(let i=0; i<credits.length; i++) {
           transactions.push({
-            date: moment(dates[i], this.dateFormatState()).toDate(),
+            date: moment(dates[i], (this.dateFormatState() as string)).toDate(),
             id: uuidv4(),
             label: labels[i],
             amount: credits[i] !== '' ? this.normalizeAmount(credits[i]) : this.normalizeAmount(debits[i]),
@@ -205,12 +230,17 @@ export class ImportTransactionComponent implements OnInit {
     }
     this.mappingTargets()?.forEach((group: Group) => {
       group.propositions.forEach(proposition => proposition.fields.forEach(target => {
-        if(!this.form.get(target)) {
+        const input = this.form.get(target) as FormControl;
+        if(!input) {
           this.form.addControl(target, this.fb.control(''));
         }
-        // Init overviews
-        this.rowsOverview().set(target, []);
-      }))
+        else {
+          if(!input.value) {
+            // Init overviews
+            this.rowsOverview().set(target, []);
+          }
+        }
+      }));
     });
   }
 
@@ -220,6 +250,10 @@ export class ImportTransactionComponent implements OnInit {
    */
   private changeOverviewOnTargetMappingChange() {
     for (const [name, control] of Object.entries(this.form.controls)) {
+      // Don't subscribe one more time for controls already changed
+      if(control.value) {
+        continue;
+      }
       control.valueChanges.subscribe({
         next: selectedColumn => {
           const rows = this.csvContent().get(selectedColumn);

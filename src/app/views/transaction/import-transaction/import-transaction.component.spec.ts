@@ -67,13 +67,9 @@ describe('ImportTransactionComponent', () => {
   })
 
   it('should switch to specified choice and loop', () => {
-    const additionalFieldElement = fixture.nativeElement.querySelector('.additional-field');
+    const additionalFieldElement = fixture.nativeElement.querySelectorAll('.select-proposition')[1];
     expect(additionalFieldElement.innerText).toContain('Montant/Type');
-    additionalFieldElement.click();
-    fixture.detectChanges();
     expect(additionalFieldElement.innerText).toContain('Montant signé');
-    additionalFieldElement.click();
-    fixture.detectChanges();
     expect(additionalFieldElement.innerText).toContain('Crédit/Débit');
   })
 });
