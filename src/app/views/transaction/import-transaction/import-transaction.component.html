@@ -1,22 +1,23 @@
 <form [formGroup]="form">
   <div class="is-flex is-justify-content-space-between form-container is-column-gap-1">
-    @for (target of mappingTargets();track $index) {
-      <div [ngClass]="{group: target.additionalField}" class="is-position-relative is-flex is-flex-direction-row is-column-gap-1">
-        @if (target.additionalField) {
-          <span class="icon-text is-position-absolute additional-field" (click)="incrementChoiceClick()">
-            <span style="font-size: 10px;">{{ target.additionalField.label }}</span>
-          <span class="icon">
-            <i class="fas fa-repeat"></i>
-          </span>
-          </span>
+    @for (target of mappingForSelectedPropositions();track $index) {
+      <div [ngClass]="{group: target.propositions.length > 1}" class="is-position-relative is-flex is-flex-direction-row is-column-gap-1">
+        @if (target.propositions.length > 1) {
+          <div class="select-proposition select is-position-absolute">
+            <select (change)="updateSelection(target, $event.target)">
+              @for (option of target.propositions; track option) {
+                <option [value]="option.label">{{ option.label }}</option>
+              }
+            </select>
+          </div>
         }
-        @for (field of target.fields;track field) {
+        @for (field of target.selectedProposition?.fields;track field) {
           <div class="target-mapping is-flex is-flex-direction-column is-fullwidth">
             <label class="target-title">{{ field }}</label>
             <div class="select">
               <select [formControlName]="field" class="csv-header">
                 <option></option>
-                @for (option of csvContent() | keyvalue;track option) {
+                @for (option of csvContentUploaded() | keyvalue;track option) {
                   <option [value]="option.key">{{ option.key }}</option>
                 }
               </select>

@@ -3,7 +3,7 @@
 }
 
 .target-mapping {
-  padding-top: 1rem;
+  padding-top: 1.5rem;
 }
 
 .group {
@@ -11,7 +11,12 @@
   border-radius: 8px;
   padding: 0 4px 8px 6px;
   margin-top: -1px;
+}
 
+.select-proposition {
+  margin: 2px;
+  right: 0;
+  font-size: 8px;
 }
 
 select {
