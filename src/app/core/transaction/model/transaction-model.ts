@@ -1,5 +1,18 @@
-export class TransactionsResult {
-  transactions: Transaction[] | undefined;
+export interface Links {
+  next: string;
+  prev: string;
+  first: string;
+  last: string;
+}
+
+export interface Metadata {
+
+}
+
+export interface TransactionsResponse {
+  transactions: Transaction[];
+  links: Links;
+  metadata: Metadata;
 }
 export enum TransactionType {
   CREDIT, DEBIT

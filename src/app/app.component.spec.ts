@@ -1,14 +1,14 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import {TransactionServiceGateway} from './core/transaction/port/transaction.service.gateway';
-import {TransactionServiceInMemory} from './core/transaction/adapter/transaction.service.in-memory.gateway';
+import {TransactionGateway} from './core/transaction/port/transaction.gateway';
+import {TransactionGatewayInMemory} from './core/transaction/adapter/transaction.gateway-in-memory';
 import {RouterModule} from '@angular/router';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [AppComponent, RouterModule.forRoot([])],
-      providers: [{ provide: TransactionServiceGateway, useFactory: () => new TransactionServiceInMemory()}]
+      providers: [{ provide: TransactionGateway, useFactory: () => new TransactionGatewayInMemory()}]
     }).compileComponents();
   });
 

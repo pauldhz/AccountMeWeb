@@ -3,9 +3,9 @@ import {provideRouter} from '@angular/router';
 
 import {routes} from './app.routes';
 import {provideClientHydration, withEventReplay} from '@angular/platform-browser';
-import {TransactionServiceGateway} from './core/transaction/port/transaction.service.gateway';
+import {TransactionGateway} from './core/transaction/port/transaction.gateway';
 import {provideHttpClient, withFetch} from '@angular/common/http';
-import {TransactionServiceInMemory} from './core/transaction/adapter/transaction.service.in-memory.gateway';
+import {TransactionGatewayInMemory} from './core/transaction/adapter/transaction.gateway-in-memory';
 import {TransactionService} from './core/transaction/adapter/transaction.service';
 
 
@@ -13,5 +13,5 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({eventCoalescing: true}),
     provideRouter(routes), provideClientHydration(withEventReplay()), provideHttpClient(withFetch()),
-    { provide: TransactionServiceGateway, useFactory: () => new TransactionService()}]
+    { provide: TransactionGateway, useFactory: () => new TransactionService()}]
 };

@@ -2,11 +2,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { EditTransactionComponent } from './edit-transaction.component';
 import {RouterModule} from '@angular/router';
-import {TransactionServiceGateway} from '../../../core/transaction/port/transaction.service.gateway';
-import {TransactionServiceInMemory} from '../../../core/transaction/adapter/transaction.service.in-memory.gateway';
+import {TransactionGateway} from '../../../core/transaction/port/transaction.gateway';
+import {TransactionGatewayInMemory} from '../../../core/transaction/adapter/transaction.gateway-in-memory';
 import {of} from 'rxjs';
-import {input, InputSignal} from '@angular/core';
-import {Transaction} from '../../../core/transaction/model/transaction-model';
+
 describe('EditTransactionComponent', () => {
   let component: EditTransactionComponent;
   let fixture: ComponentFixture<EditTransactionComponent>;
@@ -14,7 +13,7 @@ describe('EditTransactionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [EditTransactionComponent, RouterModule.forRoot([])],
-      providers: [{ provide: TransactionServiceGateway, useFactory: () => new TransactionServiceInMemory()}]
+      providers: [{ provide: TransactionGateway, useFactory: () => new TransactionGatewayInMemory()}]
     })
     .compileComponents();
 
