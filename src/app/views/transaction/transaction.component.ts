@@ -86,4 +86,5 @@ export class TransactionComponent {
 
   protected readonly TransactionType = TransactionType;
   protected readonly signal = signal;
+  protected readonly Object = Object;
 }

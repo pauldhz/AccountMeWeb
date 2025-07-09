@@ -3,6 +3,7 @@ export interface Links {
   prev: string;
   first: string;
   last: string;
+  nNextLinks: { [key: string]: string };
 }
 
 export interface Metadata {

@@ -36,6 +36,11 @@
       } @else {
         <a class="prev-link" (click)="reload$$.next(links()?.prev)">prev</a>
       }
+
+      @for (entry of links()?.nNextLinks | keyvalue; track entry) {
+        <a class="n-link" (click)="reload$$.next(entry.value)">{{ entry.key }}</a>
+      }
+
       @if (links()?.next === "") {
         <div class="next-link has-text-grey">next</div>
       } @else {

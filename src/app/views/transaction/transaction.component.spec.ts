@@ -27,7 +27,7 @@ describe('TransactionsComponent', () => {
 
   it('should next page link be active when next page available', () => {
     transactionGatewayInMemory = new TransactionGatewayInMemory().withLinks(
-      { first: "", next: "/transactions?page=1&size=20", last: "", prev: "" });
+      { first: "", next: "/transactions?page=1&size=20", last: "", prev: "", nNextLinks: {} });
     fixture = TestBed.createComponent(TransactionComponent);
     fixture.detectChanges();
     const spy = spyOn(fixture.componentInstance.reload$$, 'next');
@@ -41,7 +41,7 @@ describe('TransactionsComponent', () => {
 
   it('should disable next link when no next page', () => {
     transactionGatewayInMemory = new TransactionGatewayInMemory().withLinks(
-      { first: "", next: "", last: "", prev: "" });
+      { first: "", next: "", last: "", prev: "", nNextLinks: {} });
     fixture = TestBed.createComponent(TransactionComponent);
     fixture.detectChanges();
     const spy = spyOn(fixture.componentInstance.reload$$, 'next');
@@ -57,7 +57,7 @@ describe('TransactionsComponent', () => {
 
   it('should prev page link be active when prev page available', () => {
     transactionGatewayInMemory = new TransactionGatewayInMemory().withLinks(
-      { first: "", next: "", last: "", prev: "/transactions?page=1&size=20" });
+      { first: "", next: "", last: "", prev: "/transactions?page=1&size=20", nNextLinks: {}});
     fixture = TestBed.createComponent(TransactionComponent);
     fixture.detectChanges();
     const spy = spyOn(fixture.componentInstance.reload$$, 'next');
@@ -71,7 +71,7 @@ describe('TransactionsComponent', () => {
 
   it('should disable prev link when no prev page', () => {
     transactionGatewayInMemory = new TransactionGatewayInMemory().withLinks(
-      { first: "", next: "", last: "", prev: "" });
+      { first: "", next: "", last: "", prev: "", nNextLinks: {} });
     fixture = TestBed.createComponent(TransactionComponent);
     fixture.detectChanges();
     const spy = spyOn(fixture.componentInstance.reload$$, 'next');

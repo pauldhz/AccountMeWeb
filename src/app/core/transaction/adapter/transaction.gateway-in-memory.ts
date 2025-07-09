@@ -35,7 +35,8 @@ export class TransactionGatewayInMemory extends TransactionGateway {
     first: "",
     next: "",
     last: "",
-    prev: ""
+    prev: "",
+    nNextLinks: {"": ""}
   }
 
   private metadata: Metadata = {}
