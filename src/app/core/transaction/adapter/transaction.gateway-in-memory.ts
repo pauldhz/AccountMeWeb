@@ -39,7 +39,9 @@ export class TransactionGatewayInMemory extends TransactionGateway {
     nNextLinks: {"": ""}
   }
 
-  private metadata: Metadata = {}
+  private metadata: Metadata = {
+    currentPageNumber: 1
+  }
 
   public withTransactions(transactions: Transaction[]): TransactionGatewayInMemory {
     this.transactions = transactions;

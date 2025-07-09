@@ -38,7 +38,11 @@
       }
 
       @for (entry of links()?.nNextLinks | keyvalue; track entry) {
-        <a class="n-link" (click)="reload$$.next(entry.value)">{{ entry.key }}</a>
+        @if(metadata()?.currentPageNumber === Number(entry.key)) {
+          <u><div class="n-link">{{ entry.key }}</div></u>
+        } @else {
+          <a class="n-link" (click)="reload$$.next(entry.value)">{{ entry.key }}</a>
+        }
       }
 
       @if (links()?.next === "") {

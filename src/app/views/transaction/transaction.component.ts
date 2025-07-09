@@ -1,7 +1,7 @@
 import {Component, computed, ElementRef, inject, Signal, signal, ViewChild, WritableSignal} from '@angular/core';
 import {RouterLink} from '@angular/router';
 import {
-  Links,
+  Links, Metadata,
   Transaction,
   TransactionsResponse,
   TransactionType
@@ -43,6 +43,7 @@ export class TransactionComponent {
     this.reload$$.pipe(switchMap((link) => this.transactionServiceGateway.getTransactions$(link))));
   transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
   links: Signal<Links | undefined> = computed(() => this.transactions()?.links);
+  metadata: Signal<Metadata | undefined> = computed(() => this.transactions()?.metadata);
   importAsCSVOpened = signal(false);
   filename: WritableSignal<string> = signal('');
   csvUploadedContent: WritableSignal<Map<string, string[]>> = signal(new Map());
@@ -87,4 +88,5 @@ export class TransactionComponent {
   protected readonly TransactionType = TransactionType;
   protected readonly signal = signal;
   protected readonly Object = Object;
+  protected readonly Number = Number;
 }

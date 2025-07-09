@@ -7,7 +7,7 @@ export interface Links {
 }
 
 export interface Metadata {
-
+  currentPageNumber: number;
 }
 
 export interface TransactionsResponse {
