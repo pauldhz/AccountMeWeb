@@ -6,8 +6,8 @@ import {of} from 'rxjs';
 import {signal} from '@angular/core';
 import {TransactionService} from '../../../core/transaction/adapter/transaction.service';
 import {HttpClient, provideHttpClient} from '@angular/common/http';
-import {TransactionServiceGateway} from '../../../core/transaction/port/transaction.service.gateway';
-import {TransactionServiceInMemory} from '../../../core/transaction/adapter/transaction.service.in-memory.gateway';
+import {TransactionGateway} from '../../../core/transaction/port/transaction.gateway';
+import {TransactionGatewayInMemory} from '../../../core/transaction/adapter/transaction.gateway-in-memory';
 
 describe('ImportTransactionComponent', () => {
   let component: ImportTransactionComponent;
@@ -21,7 +21,7 @@ describe('ImportTransactionComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [ImportTransactionComponent],
-      providers: [{ provide: TransactionServiceGateway, useFactory: () => new TransactionServiceInMemory()}]
+      providers: [{ provide: TransactionGateway, useFactory: () => new TransactionGatewayInMemory()}]
     })
     .compileComponents();
 

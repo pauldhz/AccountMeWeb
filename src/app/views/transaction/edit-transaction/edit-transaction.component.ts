@@ -2,7 +2,7 @@ import {Component, effect, inject, Input, input, OnInit} from '@angular/core';
 import {Transaction} from '../../../core/transaction/model/transaction-model';
 import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import {Observable, tap} from 'rxjs';
-import {TransactionServiceGateway} from '../../../core/transaction/port/transaction.service.gateway';
+import {TransactionGateway} from '../../../core/transaction/port/transaction.gateway';
 
 @Component({
   selector: 'app-edit-transaction',
@@ -17,7 +17,7 @@ export class EditTransactionComponent implements OnInit {
 
   transaction = input.required<Transaction|undefined>();
 
-  private transactionService = inject(TransactionServiceGateway);
+  private transactionService = inject(TransactionGateway);
 
   @Input()
   editConfirmation$!: Observable<void>;
@@ -51,7 +51,7 @@ export class EditTransactionComponent implements OnInit {
         return;
       }
       this.transactionService.updateTransaction$({... this.formGroup.value, id: this.transaction()?.id, type: this.transaction()?.type})
-        .pipe(tap(() => this.transactionService.reload$$().next())).subscribe();
+        .pipe(tap(() => this.transactionService.reload$$().next(undefined))).subscribe();
     });
   }
 }

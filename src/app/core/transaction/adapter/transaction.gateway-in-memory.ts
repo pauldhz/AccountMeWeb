@@ -1,8 +1,8 @@
-import {TransactionServiceGateway} from '../port/transaction.service.gateway';
+import {TransactionGateway} from '../port/transaction.gateway';
 import {Observable, of} from 'rxjs';
-import {Transaction, TransactionType} from '../model/transaction-model';
+import {Links, Metadata, Transaction, TransactionsResponse, TransactionType} from '../model/transaction-model';
 
-export class TransactionServiceInMemory extends TransactionServiceGateway {
+export class TransactionGatewayInMemory extends TransactionGateway {
 
   private transactions: Transaction[] = [
     {
@@ -31,12 +31,42 @@ export class TransactionServiceInMemory extends TransactionServiceGateway {
     },
   ];
 
-  override getTransactions$(): Observable<Transaction[]> {
-    return of(this.transactions);
+  private links: Links = {
+    first: "",
+    next: "",
+    last: "",
+    prev: "",
+    nNextLinks: {"": ""}
+  }
+
+  private metadata: Metadata = {
+    currentPageNumber: 1
+  }
+
+  public withTransactions(transactions: Transaction[]): TransactionGatewayInMemory {
+    this.transactions = transactions;
+    return this;
+  }
+
+  public withLinks(links: Links): TransactionGatewayInMemory {
+    this.links = links;
+    return this;
+  }
+
+  private transactionResponse$(): Observable<TransactionsResponse> {
+    return of({
+      transactions: this.transactions,
+      links: this.links,
+      metadata: this.metadata
+    });
+  }
+
+  override getTransactions$(links?: string): Observable<TransactionsResponse> {
+    return this.transactionResponse$();
   }
 
   override updateTransaction$(transaction: Transaction): Observable<boolean> {
-    const arrayCopy = [... this.transactions];
+    const arrayCopy = [...this.transactions];
     const index = arrayCopy.findIndex(tmpTransaction => transaction.id == tmpTransaction.id);
     arrayCopy[index] = transaction;
     this.transactions = JSON.parse(JSON.stringify(arrayCopy));

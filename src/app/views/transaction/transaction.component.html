@@ -5,7 +5,8 @@
     <a class="has-text-primary" role="button" routerLink="add">Ajouter une transaction</a>
     <div class="file">
       <label class="file-label">
-        <input class="file-input" type="file" name="resume" accept="text/csv" (change)="onFileSelected($event)" #inputFile/>
+        <input class="file-input" type="file" name="resume" accept="text/csv" (change)="onFileSelected($event)"
+               #inputFile/>
         <span class="file-cta">
       <span class="file-icon">
         <i class="fas fa-upload"></i>
@@ -24,32 +25,56 @@
 
   <app-dialog [closeOnBackdrop]="false" [open]="importAsCSVOpened()" (closed)="onClose($event)"
               title="Importer des transactions (CSV)">
-    <app-import-transaction [csvContentUploaded]="csvUploadedContent()" [confirmation$]="dialogCloseNotifier$$.asObservable()"></app-import-transaction>
+    <app-import-transaction [csvContentUploaded]="csvUploadedContent()"
+                            [confirmation$]="dialogCloseNotifier$$.asObservable()"></app-import-transaction>
   </app-dialog>
 
-  <table class="table">
-    <thead>
-    <tr>
-      <th>Date de comptabilisation</th>
-      <th>Montant</th>
-      <th>Libellé</th>
-      <th>Commentaire</th>
-      <th>type</th>
-    </tr>
-    </thead>
-    <tbody>
-      @for (transaction of transactions();track transaction.id) {
-        <tr>
-          <td>{{ transaction.date | date: 'YYYY-MM-dd' }}</td>
-          <td>{{ transaction.amount }}</td>
-          <td>{{ transaction.label }}</td>
-          <td>{{ transaction.comment }}</td>
-          <td>{{ transaction.type }}</td>
-          <td>
-            <a class="has-text-primary" (click)="affectTransactionForEdition(transaction)">editer</a>
-          </td>
-        </tr>
+  <div class="table-container">
+    <div class="is-flex is-gap-2">
+      @if (links()?.prev === "") {
+        <div class="prev-link has-text-grey">prev</div>
+      } @else {
+        <a class="prev-link" (click)="reload$$.next(links()?.prev)">prev</a>
       }
-    </tbody>
-  </table>
+
+      @for (entry of links()?.nNextLinks | keyvalue; track entry) {
+        @if(metadata()?.currentPageNumber === Number(entry.key)) {
+          <u><div class="n-link">{{ entry.key }}</div></u>
+        } @else {
+          <a class="n-link" (click)="reload$$.next(entry.value)">{{ entry.key }}</a>
+        }
+      }
+
+      @if (links()?.next === "") {
+        <div class="next-link has-text-grey">next</div>
+      } @else {
+        <a class="next-link" (click)="reload$$.next(links()?.next)">next</a>
+      }
+    </div>
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Date de comptabilisation</th>
+        <th>Montant</th>
+        <th>Libellé</th>
+        <th>Commentaire</th>
+        <th>type</th>
+      </tr>
+      </thead>
+      <tbody>
+        @for (transaction of transactions()?.transactions; track transaction.id) {
+          <tr>
+            <td>{{ transaction.date | date: 'YYYY-MM-dd' }}</td>
+            <td>{{ transaction.amount }} €</td>
+            <td>{{ transaction.label }}</td>
+            <td>{{ transaction.comment }}</td>
+            <td>{{ transaction.type }}</td>
+            <td>
+              <a class="has-text-primary" (click)="affectTransactionForEdition(transaction)">editer</a>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
 </div>

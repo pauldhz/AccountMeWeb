@@ -1,15 +1,19 @@
-import {Component, ElementRef, inject, signal, ViewChild, WritableSignal} from '@angular/core';
+import {Component, computed, ElementRef, inject, Signal, signal, ViewChild, WritableSignal} from '@angular/core';
 import {RouterLink} from '@angular/router';
-import {Transaction, TransactionType} from '../../core/transaction/model/transaction-model';
+import {
+  Links, Metadata,
+  Transaction,
+  TransactionsResponse,
+  TransactionType
+} from '../../core/transaction/model/transaction-model';
 import {toSignal} from "@angular/core/rxjs-interop";
-import {TransactionServiceGateway} from "../../core/transaction/port/transaction.service.gateway";
+import {TransactionGateway} from "../../core/transaction/port/transaction.gateway";
 import {CommonModule, DatePipe} from "@angular/common";
 import {DialogComponent} from '../../shared/component/dialog/dialog.component';
 import {EditTransactionComponent} from './edit-transaction/edit-transaction.component';
 import {BehaviorSubject, switchMap} from 'rxjs';
 import {ImportTransactionComponent} from './import-transaction/import-transaction.component';
 import {CsvUtils} from '../../utils/csv/csv-utils';
-import {GroupBuilder} from '../../utils/mapping/group-builder';
 
 @Component({
   selector: 'app-transaction',
@@ -27,16 +31,19 @@ import {GroupBuilder} from '../../utils/mapping/group-builder';
 })
 export class TransactionComponent {
 
-  private transactionServiceGateway = inject(TransactionServiceGateway);
-  private reload$$ = this.transactionServiceGateway.reload$$();
+  private transactionServiceGateway = inject(TransactionGateway);
+  public reload$$ = this.transactionServiceGateway.reload$$();
 
   dialogCloseNotifier$$ = new BehaviorSubject(false);
   transactionNotifier$$ = new BehaviorSubject<void>(undefined);
 
   @ViewChild('inputFile') inputFile! : ElementRef<HTMLInputElement>;
 
-  transactions = toSignal(this.reload$$.pipe(switchMap(() => this.transactionServiceGateway.getTransactions$())));
+  transactions: Signal<TransactionsResponse | undefined> = toSignal(
+    this.reload$$.pipe(switchMap((link) => this.transactionServiceGateway.getTransactions$(link))));
   transactionSelectedForEdition: WritableSignal<Transaction | undefined> = signal(undefined);
+  links: Signal<Links | undefined> = computed(() => this.transactions()?.links);
+  metadata: Signal<Metadata | undefined> = computed(() => this.transactions()?.metadata);
   importAsCSVOpened = signal(false);
   filename: WritableSignal<string> = signal('');
   csvUploadedContent: WritableSignal<Map<string, string[]>> = signal(new Map());
@@ -80,4 +87,6 @@ export class TransactionComponent {
 
   protected readonly TransactionType = TransactionType;
   protected readonly signal = signal;
+  protected readonly Object = Object;
+  protected readonly Number = Number;
 }

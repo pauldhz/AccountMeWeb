@@ -7,7 +7,7 @@ import {Group, GroupBuilder} from '../../../utils/mapping/group-builder';
 import {Transaction, TransactionType} from '../../../core/transaction/model/transaction-model';
 import {v4 as uuidv4} from 'uuid';
 import moment from 'moment';
-import {TransactionServiceGateway} from '../../../core/transaction/port/transaction.service.gateway';
+import {TransactionGateway} from '../../../core/transaction/port/transaction.gateway';
 
 enum AmountProposition {
   TYPED,
@@ -127,7 +127,7 @@ export class ImportTransactionComponent implements OnInit {
   @Input({required: true})
   confirmation$!: Observable<boolean>;
 
-  constructor(private fb: FormBuilder, private transactionService: TransactionServiceGateway) {
+  constructor(private fb: FormBuilder, private transactionService: TransactionGateway) {
     effect(() => {
       this.initForm();
       this.changeOverviewOnTargetMappingChange();
